@@ -10,6 +10,10 @@
   <artifactId>use-plugin</artifactId>
   <version>0.0.8-SNAPSHOT</version>
 
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.avro</groupId>
