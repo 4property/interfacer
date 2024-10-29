@@ -10,7 +10,9 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import java.io.File;
 import java.util.List;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 /** Data transfer object containing objects used for parsing. */
 public class ParsingContext {
 
@@ -25,10 +27,11 @@ public class ParsingContext {
       @NonNull File interfacesDirectory,
       @NonNull String languageLevel) {
     classLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
-    typeSolver = createTypeSolver(scanDirectory, interfacesDirectory, classLoader);
-    parserConfiguration = new ParserConfiguration();
-    parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
-    parserConfiguration.setLanguageLevel(getEnumFor(languageLevel));
+    typeSolver = createCombinedSolver(scanDirectory, interfacesDirectory, classLoader, languageLevel);
+    parserConfiguration = new ParserConfiguration()
+        .setSymbolResolver(new JavaSymbolSolver(typeSolver))
+        .setLanguageLevel(getEnumFor(languageLevel))
+        .setLexicalPreservationEnabled(true);
     javaParser = new JavaParser(parserConfiguration);
   }
 
@@ -40,41 +43,38 @@ public class ParsingContext {
    */
   private LanguageLevel getEnumFor(String languageLevel) {
     if (languageLevel == null || languageLevel.isEmpty()) {
+      log.debug("Language level is empty, using CURRENT");
       return LanguageLevel.CURRENT;
     }
-    switch (languageLevel.toUpperCase()) {
-      case "CURRENT" -> {
-        return LanguageLevel.CURRENT;
-      }
-      case "POPULAR" -> {
-        return LanguageLevel.POPULAR;
-      }
-      case "RAW" -> {
-        return LanguageLevel.RAW;
-      }
-      case "LATEST" -> {
-        return LanguageLevel.BLEEDING_EDGE;
-      }
+    var result = switch (languageLevel.toUpperCase()) {
+      case "CURRENT" -> LanguageLevel.CURRENT;
+      case "POPULAR" -> LanguageLevel.POPULAR;
+      case "RAW" -> LanguageLevel.RAW;
+      case "LATEST" -> LanguageLevel.BLEEDING_EDGE;
       default -> {
         if (languageLevel.contains(".")) {
           languageLevel = languageLevel.replace(".", "_");
         }
         languageLevel = "JAVA_" + languageLevel;
-        return LanguageLevel.valueOf(languageLevel);
+        yield LanguageLevel.valueOf(languageLevel);
       }
-    }
+    };
+    log.debug("Language level: {}", result);
+    return result;
   }
 
   /**
    * Create type solver used for type resolution when checking is class matching
    * interface.
    */
-  public CombinedTypeSolver createTypeSolver(
-      File scanDirectory, File interfacesDirectory, ClassLoader classLoader) {
+  private CombinedTypeSolver createCombinedSolver(
+      File scanDirectory, File interfacesDirectory, ClassLoader classLoader, String languageLevel) {
     CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     combinedTypeSolver.add(new ClassLoaderTypeSolver(classLoader));
-    combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath()));
-    combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath()));
+    ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(getEnumFor(languageLevel))
+        .setLexicalPreservationEnabled(true);
+    combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath(), parserConfiguration));
+    combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath(), parserConfiguration));
     return combinedTypeSolver;
   }
 }
