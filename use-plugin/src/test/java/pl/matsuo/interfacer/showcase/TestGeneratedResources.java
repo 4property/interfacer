@@ -18,6 +18,7 @@ public class TestGeneratedResources {
   public void checkImplementedTypes() {
     assertTrue(IKeyValue.class.isAssignableFrom(BasicKeyValue.class));
     assertTrue(IKeyValueProvider.class.isAssignableFrom(KeyValueReference.class));
+    assertTrue(HasKey.class.isAssignableFrom(KeyValueReference.class));
 
     assertFalse(HasKey.class.isAssignableFrom(NoInterfacesObject.class));
     assertFalse(HasValue.class.isAssignableFrom(NoInterfacesObject.class));
