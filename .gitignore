@@ -5,4 +5,5 @@ target
 
 .gradle/
 .idea/
+.vscode/
 build/
