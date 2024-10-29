@@ -69,7 +69,7 @@ public class TestInterfacesAdder {
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir, "21");
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
     IfcResolve genericInterface = interfacesScanner.processClassFromClasspath(ifc, parsingContext.typeSolver);
@@ -100,7 +100,7 @@ public class TestInterfacesAdder {
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir, "21");
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
     List<IfcResolve> ifcResolves = new ArrayList<>();
@@ -142,7 +142,7 @@ public class TestInterfacesAdder {
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, interfacesDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, interfacesDir, "21");
 
     ParseResult<CompilationUnit> compilationUnitParseResult = interfacesAdder.parseFile(parsingContext.javaParser,
         sampleClassFile);
