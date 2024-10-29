@@ -8,7 +8,7 @@
     <version>0.0.8-SNAPSHOT</version>
   </parent>
   <artifactId>use-plugin</artifactId>
-  <version>0.0.8-SNAPSHOT</version>
+  <version>0.1.0</version>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
