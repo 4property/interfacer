@@ -11,23 +11,22 @@
   <version>0.0.8-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.16</slf4j.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.github.javaparser</groupId>
       <artifactId>javaparser-core</artifactId>
-      <version>3.24.2</version>
+      <version>3.26.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.javaparser</groupId>
       <artifactId>javaparser-symbol-solver-core</artifactId>
-      <version>3.24.2</version>
+      <version>3.26.2</version>
     </dependency>
     <dependency>
       <groupId>org.reflections</groupId>
@@ -37,7 +36,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>31.0-jre</version>
+      <version>33.3.1-jre</version>
     </dependency>
     <dependency>
       <groupId>pl.matsuo</groupId>
@@ -59,7 +58,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
+      <version>1.18.34</version>
       <scope>provided</scope>
     </dependency>
 
@@ -88,11 +87,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
+        <version>3.13.0</version>
       </plugin>
 
     </plugins>

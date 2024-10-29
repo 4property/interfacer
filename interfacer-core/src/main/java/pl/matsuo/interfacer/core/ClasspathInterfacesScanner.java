@@ -4,7 +4,7 @@ import static java.util.Collections.emptyList;
 import static pl.matsuo.core.util.collection.CollectionUtil.filterMap;
 import static pl.matsuo.core.util.collection.CollectionUtil.map;
 
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.github.javaparser.resolution.TypeSolver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
