@@ -11,6 +11,8 @@ import pl.matsuo.interfacer.avro.GenericString;
 import pl.matsuo.interfacer.avro.KeyValueReference;
 import pl.matsuo.interfacer.avro.NamedRecord;
 import pl.matsuo.interfacer.avro.NoInterfacesObject;
+import pl.matsuo.interfacer.avro.Person;
+import pl.matsuo.interfacer.avro.Address;
 
 public class TestGeneratedResources {
 
@@ -19,6 +21,9 @@ public class TestGeneratedResources {
     assertTrue(IKeyValue.class.isAssignableFrom(BasicKeyValue.class));
     assertTrue(IKeyValueProvider.class.isAssignableFrom(KeyValueReference.class));
     assertTrue(HasKey.class.isAssignableFrom(KeyValueReference.class));
+
+    assertTrue(Entity.class.isAssignableFrom(Person.class));
+    assertTrue(Entity.class.isAssignableFrom(Address.class));
 
     assertFalse(HasKey.class.isAssignableFrom(NoInterfacesObject.class));
     assertFalse(HasValue.class.isAssignableFrom(NoInterfacesObject.class));
