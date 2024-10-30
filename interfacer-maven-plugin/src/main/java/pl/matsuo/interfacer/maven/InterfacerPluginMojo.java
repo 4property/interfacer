@@ -51,6 +51,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
               scanDirectory,
               interfacesDirectory,
               interfacePackage,
+              languageLevel,
               project.getRuntimeClasspathElements());
     } catch (Exception e) {
       throw new MojoExecutionException("Error occurred", e);

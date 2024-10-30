@@ -66,6 +66,7 @@
         <version>0.1.0</version>
         <executions>
           <execution>
+            <phase>process-sources</phase>
             <goals>
               <goal>add-interfaces</goal>
             </goals>
