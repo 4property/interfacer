@@ -51,9 +51,46 @@ public class TestInterfacesAdder {
   }
 
   @Test
+  public void testJavaCurrentFeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample18Class.java", HasName.class, "CURRENT");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+
+  @Test
   public void testJava17FeaturesSupported() {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
         "/classes/test/Sample17Class.java", HasName.class, "17");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava16FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample16Class.java", HasName.class, "16");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava11FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample11Class.java", HasName.class, "11");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+@Test
+  public void testJavaPopularFeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample11Class.java", HasName.class, "POPULAR");
     assertEquals(1, modifications.size());
     assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
     assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());

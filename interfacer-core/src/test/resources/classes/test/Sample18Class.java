@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Optional;
+
 public class Sample18Class {
 
     public String getName() {
