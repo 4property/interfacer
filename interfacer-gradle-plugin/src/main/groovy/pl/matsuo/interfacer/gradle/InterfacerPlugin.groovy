@@ -12,6 +12,7 @@ class InterfacerPlugin implements Plugin<Project> {
             interfacePackage = project.interfacer.interfacePackage
             interfacesDirectory = project.interfacer.interfacesDirectory
             scanDirectory = project.interfacer.scanDirectory
+            languageLevel = project.interfacer.languageLevel
         }
     }
 }
