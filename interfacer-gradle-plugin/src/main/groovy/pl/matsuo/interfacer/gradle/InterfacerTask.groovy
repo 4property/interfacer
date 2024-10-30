@@ -17,6 +17,10 @@ class InterfacerTask extends DefaultTask {
     @Optional
     final Property<String> interfacePackage = project.objects.property(String)
 
+    @Input
+    @Optional
+    final Property<String> languageLevel = project.objects.property(String)
+
     @InputDirectory
     final Property<File> interfacesDirectory = project.objects.property(File)
 
@@ -55,6 +59,9 @@ class InterfacerTask extends DefaultTask {
             File scanDir = scanDirectory.get()
             println scanDir
 
+            String languageLevelValue = languageLevel.getOrElse("POPULAR")
+            println "languageLevel: " + languageLevelValue
+
             println "dependencies:"
             println project.configurations.compileClasspath.allDependencies
             List<String> files = project.configurations.compileClasspath.getIncoming().getFiles().toList().stream()
@@ -65,7 +72,9 @@ class InterfacerTask extends DefaultTask {
                             scanDir,
                             source,
                             interfacePackage.getOrNull(),
-                            files);
+                            languageLevelValue,
+                            files
+                            );
         } catch (Exception e) {
             e.printStackTrace()
             throw e

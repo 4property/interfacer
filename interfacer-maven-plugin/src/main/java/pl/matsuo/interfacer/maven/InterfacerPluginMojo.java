@@ -24,6 +24,10 @@ public class InterfacerPluginMojo extends AbstractMojo {
   /** Package aggregating interfaces that should be scanned through entities. */
   @Parameter String interfacePackage;
 
+  /** Language level to use when parsing source files. The default is is POPULAR (Java 11) */
+  @Parameter(defaultValue = "POPULAR")
+  String languageLevel;
+
   /** Location for the source files with added trace lines. */
   @Parameter(defaultValue = "${project.build.sourceDirectory}")
   File interfacesDirectory;
@@ -47,6 +51,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
               scanDirectory,
               interfacesDirectory,
               interfacePackage,
+              languageLevel,
               project.getRuntimeClasspathElements());
     } catch (Exception e) {
       throw new MojoExecutionException("Error occurred", e);

@@ -28,6 +28,72 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
         "/classes/test/SampleClass.java", HasName.class);
     assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava21FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample21Class.java", HasName.class, "21");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava18FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample18Class.java", HasName.class, "18");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJavaCurrentFeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample18Class.java", HasName.class, "CURRENT");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+
+  @Test
+  public void testJava17FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample17Class.java", HasName.class, "17");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava16FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample16Class.java", HasName.class, "16");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+  @Test
+  public void testJava11FeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample11Class.java", HasName.class, "11");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+  }
+
+@Test
+  public void testJavaPopularFeaturesSupported() {
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
+        "/classes/test/Sample11Class.java", HasName.class, "POPULAR");
+    assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
   }
 
   @Test
@@ -35,6 +101,9 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
         "/classes/test/SampleClass.java", HasName.class, SampleInterface.class);
     assertEquals(2, modifications.size());
+    assertEquals(2, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals("SampleInterface", modifications.get(0).getValue().getImplementedTypes().get(1).getNameAsString());
   }
 
   @Test
@@ -42,6 +111,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
         "/classes/test/SampleGenericClass.java", GenericInterface.class);
     assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("GenericInterface", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
   }
 
   @Test
@@ -56,6 +127,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = doTestInterface(
         "/classes/test/SampleMutableClass.java", MutableOwner.class);
     assertEquals(1, modifications.size());
+    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
+    assertEquals("MutableOwner", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
   }
 
   public static File fileForResource(String resourcePath) {
@@ -64,12 +137,17 @@ public class TestInterfacesAdder {
 
   public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(
       String className, Class<?> ifc) {
+    return doTestInterface(className, ifc, "21");
+  }
+
+  public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className,
+      Class<?> ifc, String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
 
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir, javaVersion);
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
     IfcResolve genericInterface = interfacesScanner.processClassFromClasspath(ifc, parsingContext.typeSolver);
@@ -94,13 +172,13 @@ public class TestInterfacesAdder {
   }
 
   public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className,
-      Class<?> ... ifcs) {
+      Class<?>... ifcs) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
 
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, scanDir, "21");
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
     List<IfcResolve> ifcResolves = new ArrayList<>();
@@ -132,6 +210,11 @@ public class TestInterfacesAdder {
 
   public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(
       String className, File interfacesDir) {
+    return doTestInterface(className, interfacesDir, "POPULAR");
+  }
+
+  public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className,
+      File interfacesDir, String javaVersion) {
     SourceInterfacesScanner interfacesScanner = new SourceInterfacesScanner();
 
     List<IfcResolve> ifcResolves = interfacesScanner.scanInterfacesFromSrc(null, interfacesDir);
@@ -142,7 +225,7 @@ public class TestInterfacesAdder {
     File sampleClassFile = fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
 
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, interfacesDir);
+    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, interfacesDir, javaVersion);
 
     ParseResult<CompilationUnit> compilationUnitParseResult = interfacesAdder.parseFile(parsingContext.javaParser,
         sampleClassFile);
@@ -152,7 +235,8 @@ public class TestInterfacesAdder {
     }
 
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-        asList(compilationUnitParseResult), ifcResolves, parsingContext.javaParser);
+        asList(compilationUnitParseResult), ifcResolves,
+        parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
 

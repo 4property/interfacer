@@ -55,12 +55,17 @@ public class InterfacesAdder {
    *
    * In first pass we can add <code>SampleInterface</code> to <code>SampleResult</code>. Now in
    * second pass we can add <code>SampleInterface2</code> to <code>Sample</code>.
+   *
+   * @param languageLevel The language level to use when parsing source files. This is a string value
+   *     that can be the java version. It can also be string constants like "CURRENT", "POPULAR" or
+   *     "LATEST". CURRENT is Java 18 and POPULAR is Java 11. LATEST is the latest version of Java
+   *     that is supported by the JavaParser library.
    */
   public void addInterfacesAllFiles(
       @NonNull File scanDirectory,
       File interfacesDirectory,
       String interfacePackage,
-      List<String> compileClasspathElements) {
+      String languageLevel, List<String> compileClasspathElements) {
 
     if (interfacesDirectory == null
         && (interfacePackage == null || compileClasspathElements == null)) {
@@ -69,6 +74,8 @@ public class InterfacesAdder {
               + interfacesDirectory
               + " interfacePackage "
               + interfacePackage
+              + " languageLevel "
+              + languageLevel
               + " compileClasspathElements "
               + compileClasspathElements);
     }
@@ -83,6 +90,7 @@ public class InterfacesAdder {
                 scanDirectory,
                 interfacesDirectory,
                 interfacePackage,
+                languageLevel,
                 compileClasspathElements,
                 allModifications);
 
@@ -100,11 +108,12 @@ public class InterfacesAdder {
       File scanDirectory,
       File interfacesDirectory,
       String interfacePackage,
+      String languageLevel,
       List<String> compileClasspathElements,
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications)
       throws IOException {
     ParsingContext parsingContext =
-        new ParsingContext(compileClasspathElements, scanDirectory, interfacesDirectory);
+        new ParsingContext(compileClasspathElements, scanDirectory, interfacesDirectory, languageLevel);
 
     final SourceRoot source =
         new SourceRoot(scanDirectory.toPath(), parsingContext.parserConfiguration);

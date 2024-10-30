@@ -8,7 +8,7 @@
     <version>0.0.8-SNAPSHOT</version>
   </parent>
   <artifactId>use-plugin</artifactId>
-  <version>0.0.8-SNAPSHOT</version>
+  <version>0.1.0</version>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -63,14 +63,16 @@
       <plugin>
         <groupId>pl.matsuo.interfacer</groupId>
         <artifactId>interfacer-maven-plugin</artifactId>
-        <version>0.0.8-SNAPSHOT</version>
+        <version>0.1.0</version>
         <executions>
           <execution>
+            <phase>process-sources</phase>
             <goals>
               <goal>add-interfaces</goal>
             </goals>
             <configuration>
               <interfacePackage>pl.matsuo.interfacer.showcase</interfacePackage>
+              <languageLevel>21</languageLevel>
             </configuration>
           </execution>
         </executions>
