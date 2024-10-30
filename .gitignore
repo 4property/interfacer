@@ -1,8 +1,10 @@
 target
+bin
 
 .idea
 *.iml
 
 .gradle/
 .idea/
+.vscode/
 build/

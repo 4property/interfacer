@@ -7,7 +7,7 @@ import static pl.matsuo.core.util.collection.CollectionUtil.map;
 import static pl.matsuo.core.util.collection.CollectionUtil.toMap;
 
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.github.javaparser.resolution.TypeSolver;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;

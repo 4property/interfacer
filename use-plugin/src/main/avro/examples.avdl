@@ -38,4 +38,22 @@ protocol KeyValue {
       date singleton;
       @java-class("java.util.ArrayList") array<date> list;
     }
+
+    record Address {
+      uuid entityId;
+      string street;
+      string city;
+      string state;
+      string zipCode;
+      string country;
+    }
+
+    record Person {
+      int id;
+      uuid entityId;
+      string firstName;
+      string lastName;
+      string email;
+      Address address;
+    }
 }
