@@ -1,8 +1,9 @@
 package pl.matsuo.interfacer.core.log;
 
-import com.google.common.base.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Supplier;
 
 /** Adapter for logging messages. To be used with maven or gradle plugins. */
 public interface Adapter {

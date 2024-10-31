@@ -1,6 +1,6 @@
 package pl.matsuo.interfacer.core.log;
 
-import com.google.common.base.Supplier;
+import java.util.function.Supplier;
 
 public class Log {
     static Adapter adapter ;

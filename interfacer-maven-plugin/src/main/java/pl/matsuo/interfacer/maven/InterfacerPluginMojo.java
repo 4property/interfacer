@@ -44,6 +44,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException {
     JavaParserMavenUtils.makeJavaParserLogToMavenOutput(getLog());
+    JavaParserMavenUtils.makeInterfacerLogToMavenOutput(getLog());
 
     try {
       new InterfacesAdder()
