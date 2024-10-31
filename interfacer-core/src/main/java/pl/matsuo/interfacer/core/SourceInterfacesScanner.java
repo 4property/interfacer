@@ -14,47 +14,55 @@ import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.ifc.IfcResolve;
 import pl.matsuo.interfacer.model.ifc.TypeDeclarationIfcResolve;
 
-/** Implements scanning sources for interfaces that should be used during interface adding. */
+/**
+ * Implements scanning sources for interfaces that should be used during
+ * interface adding.
+ */
 @Slf4j
 public class SourceInterfacesScanner {
 
   /** Parse source classes and create {@link IfcResolve} for interfaces. */
   public List<IfcResolve> scanInterfacesFromSrc(
-      ParserConfiguration parserConfiguration, File interfacesDirectory) {
+      ParserConfiguration parserConfiguration, List<File> interfacesDirectories) {
     List<IfcResolve> ifcs = new ArrayList<>();
 
     // do not scan anything if source directory was not specified
-    if (interfacesDirectory == null) {
+    if (interfacesDirectories == null || interfacesDirectories.isEmpty()) {
       return ifcs;
     }
 
-    final SourceRoot source = new SourceRoot(interfacesDirectory.toPath(), parserConfiguration);
-    try {
-      for (ParseResult<CompilationUnit> parseResult : source.tryToParse()) {
-        // Only deal with files without parse errors
-        if (parseResult.isSuccessful()) {
-          parseResult
-              .getResult()
-              .ifPresent(
-                  cu -> {
-                    // Do the actual logic
-                    IfcResolve ifcResolve = getIfcResolve(cu);
-                    if (ifcResolve != null) {
-                      ifcs.add(ifcResolve);
-                    }
-                  });
-        } else {
-          log.warn("Parse failure for " + parseResult.getProblems());
+    for (File interfacesDirectory : interfacesDirectories) {
+      final SourceRoot source = new SourceRoot(interfacesDirectory.toPath(), parserConfiguration);
+      try {
+        for (ParseResult<CompilationUnit> parseResult : source.tryToParse()) {
+          // Only deal with files without parse errors
+          if (parseResult.isSuccessful()) {
+            parseResult
+                .getResult()
+                .ifPresent(
+                    cu -> {
+                      // Do the actual logic
+                      IfcResolve ifcResolve = getIfcResolve(cu);
+                      if (ifcResolve != null) {
+                        ifcs.add(ifcResolve);
+                      }
+                    });
+          } else {
+            log.warn("Parse failure for " + parseResult.getProblems());
+          }
         }
+      } catch (IOException e) {
+        throw new RuntimeException("Error reading from source directory", e);
       }
-    } catch (IOException e) {
-      throw new RuntimeException("Error reading from source directory", e);
     }
 
     return ifcs;
   }
 
-  /** Create {@link IfcResolve} for interface represented by <code>compilationUnit</code>. */
+  /**
+   * Create {@link IfcResolve} for interface represented by
+   * <code>compilationUnit</code>.
+   */
   public IfcResolve getIfcResolve(CompilationUnit compilationUnit) {
     return compilationUnit
         .getPrimaryType()

@@ -24,10 +24,10 @@ public class ParsingContext {
   public ParsingContext(
       List<String> compileClasspathElements,
       @NonNull File scanDirectory,
-      @NonNull File interfacesDirectory,
+      @NonNull List<File> interfacesDirectories,
       @NonNull String languageLevel) {
     classLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
-    typeSolver = createCombinedSolver(scanDirectory, interfacesDirectory, classLoader, languageLevel);
+    typeSolver = createCombinedSolver(scanDirectory, interfacesDirectories, classLoader, languageLevel);
     parserConfiguration = new ParserConfiguration()
         .setSymbolResolver(new JavaSymbolSolver(typeSolver))
         .setLanguageLevel(getEnumFor(languageLevel))
@@ -68,13 +68,15 @@ public class ParsingContext {
    * interface.
    */
   private CombinedTypeSolver createCombinedSolver(
-      File scanDirectory, File interfacesDirectory, ClassLoader classLoader, String languageLevel) {
+      File scanDirectory, List<File> interfacesDirectories, ClassLoader classLoader, String languageLevel) {
     CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     combinedTypeSolver.add(new ClassLoaderTypeSolver(classLoader));
     ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(getEnumFor(languageLevel))
         .setLexicalPreservationEnabled(true);
     combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath(), parserConfiguration));
-    combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath(), parserConfiguration));
+    for (File interfacesDirectory : interfacesDirectories) {
+      combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath(), parserConfiguration));
+    }
     return combinedTypeSolver;
   }
 }

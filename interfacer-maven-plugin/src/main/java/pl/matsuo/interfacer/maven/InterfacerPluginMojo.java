@@ -17,7 +17,7 @@ import pl.matsuo.interfacer.core.InterfacesAdder;
 @Mojo(
     name = "add-interfaces",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
-    requiresDependencyResolution = ResolutionScope.RUNTIME,
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
     threadSafe = true)
 public class InterfacerPluginMojo extends AbstractMojo {
 

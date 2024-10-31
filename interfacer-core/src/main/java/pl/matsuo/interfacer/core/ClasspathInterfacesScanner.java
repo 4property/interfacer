@@ -28,13 +28,13 @@ public class ClasspathInterfacesScanner {
    * </code> and create {@link IfcResolve} instances for every one of them.
    */
   public List<IfcResolve> scanInterfacesFromClasspath(
-      ClassLoader classLoader, String interfacePackage, TypeSolver typeSolver) {
-    if (interfacePackage == null) {
+      ClassLoader classLoader, String interfacePackages, TypeSolver typeSolver) {
+    if (interfacePackages == null || interfacePackages.isEmpty()) {
       return emptyList();
     }
 
-    String[] interfacePackages = interfacePackage.split(",");
-    Reflections reflections = createReflections(classLoader, interfacePackages);
+    String[] interfacePackagesArray = interfacePackages.split(",");
+    Reflections reflections = createReflections(classLoader, interfacePackagesArray);
 
     return filterMap(
         reflections.getSubTypesOf(Object.class),

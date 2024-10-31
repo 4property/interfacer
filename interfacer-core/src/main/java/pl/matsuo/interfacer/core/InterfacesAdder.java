@@ -16,68 +16,96 @@ import com.github.javaparser.utils.SourceRoot;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
+import java.util.HashSet;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.core.util.collection.Pair;
 import pl.matsuo.interfacer.model.ifc.IfcResolve;
+import java.util.Collections;
 
 @Slf4j
 public class InterfacesAdder {
 
   /**
-   * Add interfaces found in <code>interfacesDirectory</code> and <code>compileClasspathElements
+   * Modifications of source files after adding interfaces.
+   */
+  record Modifications(SourceRoot source, List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications) {
+
+    /** Save all changes to disk. */
+    public void save() {
+      if (isEmpty()) {
+        source.saveAll();
+      }
+    }
+
+    /** Check if there were any modifications. */
+    public boolean isEmpty() {
+      return modifications.isEmpty();
+    }
+  }
+
+  /**
+   * Add interfaces found in <code>interfacesDirectory</code> and
+   * <code>compileClasspathElements
    * </code> to classes found in <code>scanDirectory</code>.
    *
-   * <p>Method will execute multiple passes of adding. When classes implement additional interfaces,
+   * <p>
+   * Method will execute multiple passes of adding. When classes implement
+   * additional interfaces,
    * it's possible that some classes may now match new interfaces.
    *
    * <pre>
-   *         interface SampleInterface {
-   *           Integer getValue();
-   *         }
+   * interface SampleInterface {
+   *   Integer getValue();
+   * }
    *
-   *         interface SampleInterface2 {
-   *           SampleInterface getResult();
-   *         }
+   * interface SampleInterface2 {
+   *   SampleInterface getResult();
+   * }
    *
-   *         class SampleResult {
-   *           Integer getValue();
-   *         }
+   * class SampleResult {
+   *   Integer getValue();
+   * }
    *
-   *         class Sample {
-   *             SampleResult getResult();
-   *         }
-   *     </pre>
+   * class Sample {
+   *   SampleResult getResult();
+   * }
+   * </pre>
    *
-   * In first pass we can add <code>SampleInterface</code> to <code>SampleResult</code>. Now in
+   * In first pass we can add <code>SampleInterface</code> to
+   * <code>SampleResult</code>. Now in
    * second pass we can add <code>SampleInterface2</code> to <code>Sample</code>.
    *
-   * @param languageLevel The language level to use when parsing source files. This is a string value
-   *     that can be the java version. It can also be string constants like "CURRENT", "POPULAR" or
-   *     "LATEST". CURRENT is Java 18 and POPULAR is Java 11. LATEST is the latest version of Java
-   *     that is supported by the JavaParser library.
+   * @param languageLevel The language level to use when parsing source files.
+   *                      This is a string value
+   *                      that can be the java version. It can also be string
+   *                      constants like "CURRENT", "POPULAR" or
+   *                      "LATEST". CURRENT is Java 18 and POPULAR is Java 11.
+   *                      LATEST is the latest version of Java
+   *                      that is supported by the JavaParser library.
    */
   public void addInterfacesAllFiles(
       @NonNull File scanDirectory,
       File interfacesDirectory,
-      String interfacePackage,
+      String interfacePackages,
       String languageLevel, List<String> compileClasspathElements) {
 
     if (interfacesDirectory == null
-        && (interfacePackage == null || compileClasspathElements == null)) {
-      throw new RuntimeException(
-          "No interface source defined: interfacesDirectory "
-              + interfacesDirectory
-              + " interfacePackage "
-              + interfacePackage
-              + " languageLevel "
-              + languageLevel
-              + " compileClasspathElements "
-              + compileClasspathElements);
+        && (interfacePackages == null || compileClasspathElements == null)) {
+      throw new RuntimeException("""
+          No interface source defined, recieved arguments:
+              interfacesDirectory: %s
+              interfacePackages: %s
+              languageLevel: %s
+              compileClasspathElements: %s""".formatted(
+          interfacesDirectory, interfacePackages, languageLevel, compileClasspathElements));
     }
 
     log.info("Start processing");
@@ -85,16 +113,16 @@ public class InterfacesAdder {
     try {
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications = new ArrayList<>();
       while (true) {
-        List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications =
-            addInterfacesAllFiles(
-                scanDirectory,
-                interfacesDirectory,
-                interfacePackage,
-                languageLevel,
-                compileClasspathElements,
-                allModifications);
+        Modifications modifications = addInterfacesAllFiles(
+            scanDirectory,
+            interfacesDirectory,
+            interfacePackages,
+            languageLevel,
+            compileClasspathElements,
+            allModifications);
 
-        if (modifications.isEmpty()) {
+        if (!modifications.isEmpty()) {
+          log.info("End of processing");
           break;
         }
       }
@@ -104,29 +132,126 @@ public class InterfacesAdder {
   }
 
   /** Single pass of interface adding. */
-  private List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> addInterfacesAllFiles(
+  Modifications addInterfacesAllFiles(
       File scanDirectory,
       File interfacesDirectory,
-      String interfacePackage,
+      String interfacePackages,
       String languageLevel,
       List<String> compileClasspathElements,
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications)
       throws IOException {
-    ParsingContext parsingContext =
-        new ParsingContext(compileClasspathElements, scanDirectory, interfacesDirectory, languageLevel);
 
-    final SourceRoot source =
-        new SourceRoot(scanDirectory.toPath(), parsingContext.parserConfiguration);
+    Modifications modifications = parseAll(scanDirectory, interfacesDirectory, interfacePackages,
+        languageLevel, compileClasspathElements);
 
-    List<IfcResolve> ifcs = scanInterfaces(interfacesDirectory, interfacePackage, parsingContext);
-
-    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications =
-        processAllFiles(source.tryToParse(), ifcs, parsingContext.javaParser);
-    allModifications.addAll(modifications);
+    allModifications.addAll(modifications.modifications());
 
     // save changes on disk
-    source.saveAll();
+    modifications.save();
     return modifications;
+  }
+
+  Modifications parseAll(File scanDirectory, File interfacesDirectory,
+      String interfacePackages, String languageLevel, List<String> compileClasspathElements) {
+    List<File> interfacesDirectories = processInterfaces(interfacesDirectory, interfacePackages, languageLevel,
+        compileClasspathElements);
+    ParsingContext parsingContext = new ParsingContext(compileClasspathElements, scanDirectory, interfacesDirectories,
+        languageLevel);
+
+    final SourceRoot source = new SourceRoot(scanDirectory.toPath(), parsingContext.parserConfiguration);
+
+    List<IfcResolve> ifcs = scanInterfaces(interfacesDirectories, interfacePackages, parsingContext);
+
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = Collections.emptyList();
+    try {
+      modifications = processAllFiles(source.tryToParse(), ifcs,
+          parsingContext.javaParser);
+    } catch (IOException e) {
+      throw new RuntimeException("Error reading from source directory", e);
+    }
+    return new Modifications(source, modifications);
+  }
+
+  /**
+   * Process interfaces directory and interface packages arguments. This method
+   * will return list of directories to scan for interfaces. If no
+   * <code>interfacesDirectory</code> is provided, it will try to find interfaces
+   * on classpath using the <code>interfacePackages</code> argument. The method
+   * will drop quietly with a warning packages that do not exist on classpath or
+   * that cannpot be found in the directory structure.
+   * <p>
+   * If the argument <code>interfacesDirectory</code> is provided along with
+   * valid <code>interfacePackages</code>, it will be scanned for all packages
+   * defined in <code>interfacePackages</code> that match the directory structure.
+   * <p>
+   * If the argument <code>interfacesDirectory</code> is provided along with
+   * empty or null <code>interfacePackages</code>, the directory will be passed
+   * back.
+   * <p>
+   * 
+   * @param interfacesDirectory      directory to scan for interfaces
+   * @param interfacePackages        packages to scan for interfaces
+   * @param languageLevel            language level to use when parsing source
+   *                                 files
+   * @param compileClasspathElements classpath elements to use when scanning for
+   *                                 interfaces
+   *
+   * @return list of directories to scan for interfaces
+   */
+  private List<File> processInterfaces(File interfacesDirectory, String interfacePackages, String languageLevel,
+      List<String> compileClasspathElements) {
+    if (interfacesDirectory == null) {
+      if (interfacePackages == null || interfacePackages.isEmpty()) {
+        throw new IllegalArgumentException("""
+            No interface source defined, recieved arguments:
+                interfacesDirectory: %s
+                interfacePackages: %s
+                languageLevel: %s
+                compileClasspathElements: %s""".formatted(
+            interfacesDirectory, interfacePackages, languageLevel, compileClasspathElements));
+      }
+      String[] interfacePackagesArray = interfacePackages.split(",");
+      List<File> interfaceDirectories = new ArrayList<>();
+      Set<Path> rootPackagePaths = new HashSet<>();
+      ClassLoader compileClassLoader = null;
+      if (compileClasspathElements != null && !compileClasspathElements.isEmpty()) {
+        // Use this more capable class loader if the maven or gradle plugin is used
+        compileClassLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
+      } else {
+        // Use this class loader if the command line interface is used
+        compileClassLoader = getClass().getClassLoader();
+      }
+      for (String interfacePackage : interfacePackagesArray) {
+        String packagePath = interfacePackage.replace('.', '/');
+        URL packageURL = compileClassLoader.getResource(packagePath);
+        if (packageURL == null) {
+          log.warn("Package: {} not found in classpath, ignoring!", interfacePackage);
+        } else {
+          File packageDirectory = new File(packageURL.getPath());
+          if (packageDirectory.exists() && packageDirectory.isDirectory()) {
+            if (rootPackagePaths.add(packageDirectory.toPath().toAbsolutePath().getParent())) {
+              interfaceDirectories.add(packageDirectory);
+            }
+          }
+        }
+      }
+      return interfaceDirectories;
+    } else {
+      if ((interfacePackages == null || interfacePackages.isEmpty()) && interfacesDirectory != null) {
+        return Collections.singletonList(interfacesDirectory);
+      } else if (interfacePackages != null && !interfacePackages.isEmpty()) {
+        String[] interfacePackagesArray = interfacePackages.split(",");
+        for (String interfacePackage : interfacePackagesArray) {
+          String packagePath = interfacePackage.replace('.', '/');
+          File packageDirectory = new File(interfacesDirectory, packagePath);
+          if (!packageDirectory.exists() || !packageDirectory.isDirectory()) {
+            log.warn("Package: {} not found in the given interfaces directory: {}, ignoring!", interfacePackage,
+                interfacesDirectory);
+          }
+        }
+      }
+      return Collections.singletonList(interfacesDirectory);
+    }
   }
 
   /** Parse file using internal {@link JavaParser}. */
@@ -139,23 +264,25 @@ public class InterfacesAdder {
   }
 
   /** Search for interfaces on classpath and in source folder. */
-  public List<IfcResolve> scanInterfaces(
-      File interfacesDirectory, String interfacePackage, ParsingContext parsingContext) {
+  public List<IfcResolve> scanInterfaces(List<File> interfacesDirectories, String interfacePackages,
+      ParsingContext parsingContext) {
     List<IfcResolve> ifcs = new ArrayList<>();
     ifcs.addAll(
         new ClasspathInterfacesScanner()
             .scanInterfacesFromClasspath(
-                parsingContext.classLoader, interfacePackage, parsingContext.typeSolver));
+                parsingContext.classLoader, interfacePackages, parsingContext.typeSolver));
     ifcs.addAll(
         new SourceInterfacesScanner()
-            .scanInterfacesFromSrc(parsingContext.parserConfiguration, interfacesDirectory));
+            .scanInterfacesFromSrc(parsingContext.parserConfiguration, interfacesDirectories));
     Comparator<IfcResolve> comparator = comparing(i -> -i.getMethods().size());
     ifcs.sort(comparator);
     return ifcs;
   }
 
-  /** Go through all parsed generated classes and try adding interfaces to them. */
-  public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> processAllFiles(
+  /**
+   * Go through all parsed generated classes and try adding interfaces to them.
+   */
+  List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> processAllFiles(
       List<ParseResult<CompilationUnit>> parseResults,
       List<IfcResolve> ifcs,
       JavaParser javaParser) {
@@ -181,29 +308,29 @@ public class InterfacesAdder {
   }
 
   /** Add interfaces to class parsed into <code>compilationUnit</code>. */
-  public List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> addInterfaces(
+  private List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> addInterfaces(
       CompilationUnit compilationUnit, List<IfcResolve> ifcs, JavaParser javaParser) {
     return compilationUnit
         .getPrimaryType()
         .map(
-            primaryType ->
-                primaryType.isClassOrInterfaceDeclaration()
-                    ? (ClassOrInterfaceDeclaration) primaryType
-                    : null)
+            primaryType -> primaryType.isClassOrInterfaceDeclaration()
+                ? (ClassOrInterfaceDeclaration) primaryType
+                : null)
         .filter(declaration -> !declaration.isInterface())
         .map(
-            declaration ->
-                filterMap(
-                    ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
+            declaration -> filterMap(
+                ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
         .orElse(emptyList());
   }
 
   /**
-   * Check if class <code>declaration</code> is matching interface <code>ifc</code>. If true, add
-   * interface to the class. Return <code>pair</code> representing interface and class. Return
+   * Check if class <code>declaration</code> is matching interface
+   * <code>ifc</code>. If true, add
+   * interface to the class. Return <code>pair</code> representing interface and
+   * class. Return
    * <code>null</code> if interface was not added.
    */
-  public Pair<IfcResolve, ClassOrInterfaceDeclaration> processDeclarationWithInterface(
+  private Pair<IfcResolve, ClassOrInterfaceDeclaration> processDeclarationWithInterface(
       ClassOrInterfaceDeclaration declaration, IfcResolve ifc, JavaParser javaParser) {
 
     Map<String, String> resolvedTypeVariables = ifc.matches(declaration);
@@ -218,7 +345,8 @@ public class InterfacesAdder {
   }
 
   /**
-   * Create interface <code>ifc</code> representation in <code>javaparser</code> and add it to the
+   * Create interface <code>ifc</code> representation in <code>javaparser</code>
+   * and add it to the
    * class <code>declaration</code>.
    */
   private Pair<IfcResolve, ClassOrInterfaceDeclaration> addInterfaceToClassDeclaration(
@@ -243,7 +371,10 @@ public class InterfacesAdder {
     return pair(ifc, declaration);
   }
 
-  /** Check if <code>declaration</code> is representing subtype of interface <code>ifc</code>. */
+  /**
+   * Check if <code>declaration</code> is representing subtype of interface
+   * <code>ifc</code>.
+   */
   private boolean canBeAssignedTo(ClassOrInterfaceDeclaration declaration, IfcResolve ifc) {
     return anyMatch(
         declaration.resolve().getAncestors(),
