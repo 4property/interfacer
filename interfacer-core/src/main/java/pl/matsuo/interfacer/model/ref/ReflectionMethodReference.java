@@ -18,10 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import pl.matsuo.interfacer.core.log.Log;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
-@Slf4j
+
 @RequiredArgsConstructor
 public class ReflectionMethodReference implements MethodReference {
 
@@ -85,7 +85,7 @@ public class ReflectionMethodReference implements MethodReference {
     Map<String, String> result = new HashMap<>();
 
     if (generic instanceof ParameterizedType) {
-      log.info("ParameterizedType " + generic);
+      Log.debug(() -> "ParameterizedType " + generic);
       if (param instanceof ClassOrInterfaceType) {
         List<com.github.javaparser.ast.type.Type> typeArguments =
             ((ClassOrInterfaceType) param)
@@ -98,10 +98,10 @@ public class ReflectionMethodReference implements MethodReference {
         throw new RuntimeException("Not implemented yet");
       }
     } else if (generic instanceof TypeVariable) {
-      log.info("TypeVariable " + generic);
+      Log.debug(() -> "TypeVariable " + generic);
       result.put(((TypeVariable<?>) generic).getName(), param.resolve().describe());
     } else {
-      log.info("Not a generic: " + generic + " for concrete: " + param);
+      Log.debug(() -> "Not a generic: %s for concrete: %s".formatted(generic, param));
     }
 
     return result;

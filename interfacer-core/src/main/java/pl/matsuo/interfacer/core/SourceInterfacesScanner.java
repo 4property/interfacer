@@ -2,6 +2,7 @@ package pl.matsuo.interfacer.core;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.Problem;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -10,15 +11,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.ifc.IfcResolve;
 import pl.matsuo.interfacer.model.ifc.TypeDeclarationIfcResolve;
+import pl.matsuo.interfacer.core.log.Log;
+import java.util.stream.Collectors;
 
 /**
  * Implements scanning sources for interfaces that should be used during
  * interface adding.
  */
-@Slf4j
 public class SourceInterfacesScanner {
 
   /** Parse source classes and create {@link IfcResolve} for interfaces. */
@@ -48,7 +49,14 @@ public class SourceInterfacesScanner {
                       }
                     });
           } else {
-            log.warn("Parse failure for " + parseResult.getProblems());
+            String problems = parseResult.getProblems().stream()
+                .map(Problem::toString)
+                .collect(Collectors.joining("\n"));
+            String msgBlock = """
+                Parse failure on directory: %s
+                    Problems: %s
+                """.formatted(interfacesDirectory, problems);
+            Log.warn(() -> msgBlock);
           }
         }
       } catch (IOException e) {

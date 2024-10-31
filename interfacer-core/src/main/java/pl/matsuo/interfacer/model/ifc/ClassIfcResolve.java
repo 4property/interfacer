@@ -15,14 +15,12 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.ref.MethodReference;
 import pl.matsuo.interfacer.model.ref.ReflectionMethodReference;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
 @ToString
 @RequiredArgsConstructor
-@Slf4j
 public class ClassIfcResolve extends AbstractIfcResolve {
 
   final Class<?> clazz;

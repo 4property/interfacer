@@ -25,12 +25,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.core.util.collection.Pair;
 import pl.matsuo.interfacer.model.ifc.IfcResolve;
 import java.util.Collections;
+import pl.matsuo.interfacer.core.log.Log;
 
-@Slf4j
 public class InterfacesAdder {
 
   /**
@@ -108,7 +107,7 @@ public class InterfacesAdder {
           interfacesDirectory, interfacePackages, languageLevel, compileClasspathElements));
     }
 
-    log.info("Start processing");
+    Log.info(() -> "Start processing");
 
     try {
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications = new ArrayList<>();
@@ -122,7 +121,7 @@ public class InterfacesAdder {
             allModifications);
 
         if (!modifications.isEmpty()) {
-          log.info("End of processing");
+          Log.info(() -> "End of processing");
           break;
         }
       }
@@ -167,7 +166,7 @@ public class InterfacesAdder {
       modifications = processAllFiles(source.tryToParse(), ifcs,
           parsingContext.javaParser);
     } catch (IOException e) {
-      throw new RuntimeException("Error reading from source directory", e);
+      Log.error(() -> "Error reading from source directory", () -> e);
     }
     return new Modifications(source, modifications);
   }
@@ -225,7 +224,7 @@ public class InterfacesAdder {
         String packagePath = interfacePackage.replace('.', '/');
         URL packageURL = compileClassLoader.getResource(packagePath);
         if (packageURL == null) {
-          log.warn("Package: {} not found in classpath, ignoring!", interfacePackage);
+          Log.warn(() -> "Package: %s not found in classpath, ignoring!".formatted(interfacePackage));
         } else {
           File packageDirectory = new File(packageURL.getPath());
           if (packageDirectory.exists() && packageDirectory.isDirectory()) {
@@ -245,8 +244,9 @@ public class InterfacesAdder {
           String packagePath = interfacePackage.replace('.', '/');
           File packageDirectory = new File(interfacesDirectory, packagePath);
           if (!packageDirectory.exists() || !packageDirectory.isDirectory()) {
-            log.warn("Package: {} not found in the given interfaces directory: {}, ignoring!", interfacePackage,
-                interfacesDirectory);
+            Log.warn(() -> "Package: %s not found in the given interfaces directory: %s, ignoring!".formatted(
+                interfacePackage,
+                interfacesDirectory));
           }
         }
       }
@@ -301,7 +301,7 @@ public class InterfacesAdder {
                     })
                 .orElse(emptyList());
           } else {
-            log.warn("Parse failure for " + parseResult.getProblems());
+            Log.warn(() -> "Parse failure for " + parseResult.getProblems());
             return emptyList();
           }
         });
@@ -354,11 +354,7 @@ public class InterfacesAdder {
       IfcResolve ifc,
       JavaParser javaParser,
       Map<String, String> resolvedTypeVariables) {
-    log.info(
-        "Modifying the class: "
-            + declaration.getFullyQualifiedName()
-            + " with ifc "
-            + ifc.getName());
+    Log.info(() -> "Modifying the class: %s with ifc %s".formatted(declaration.getFullyQualifiedName(), ifc.getName()));
 
     ClassOrInterfaceType type = // new ClassOrInterfaceType(ifc.getName());
         javaParser

@@ -10,9 +10,8 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import java.io.File;
 import java.util.List;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import pl.matsuo.interfacer.core.log.Log;
 
-@Slf4j
 /** Data transfer object containing objects used for parsing. */
 public class ParsingContext {
 
@@ -43,7 +42,7 @@ public class ParsingContext {
    */
   private LanguageLevel getEnumFor(String languageLevel) {
     if (languageLevel == null || languageLevel.isEmpty()) {
-      log.debug("Language level is empty, using CURRENT");
+      Log.debug(() -> "Language level is empty, using CURRENT");
       return LanguageLevel.CURRENT;
     }
     var result = switch (languageLevel.toUpperCase()) {
@@ -59,7 +58,7 @@ public class ParsingContext {
         yield LanguageLevel.valueOf(languageLevel);
       }
     };
-    log.debug("Language level: {}", result);
+    Log.debug(() -> "Language level: %s".formatted(result));
     return result;
   }
 

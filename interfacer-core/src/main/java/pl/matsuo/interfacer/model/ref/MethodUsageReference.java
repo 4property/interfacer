@@ -7,10 +7,8 @@ import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.types.ResolvedType;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
-@Slf4j
 @RequiredArgsConstructor
 public class MethodUsageReference implements MethodReference {
 
