@@ -12,7 +12,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -63,7 +63,7 @@ public class ClasspathInterfacesScanner {
         new ConfigurationBuilder()
             .addClassLoaders(classLoader)
             .setUrls(ClasspathHelper.forClassLoader(classLoader))
-            .setScanners(new SubTypesScanner(false))
+            .setScanners(Scanners.SubTypes.filterResultsBy(type -> true))
             .filterInputsBy(filterBuilder));
   }
 
