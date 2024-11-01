@@ -11,6 +11,8 @@ import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import pl.matsuo.interfacer.model.ref.MethodReference;
@@ -67,4 +69,12 @@ public class TypeDeclarationIfcResolve extends AbstractIfcResolve {
         TypeParameter::asString,
         tp -> new TypeVariableReference(null, tp));
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof TypeDeclarationIfcResolve that)) return false;
+    return Objects.equals(getName(), that.getName());
+  }
+
 }

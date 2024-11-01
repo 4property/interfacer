@@ -35,7 +35,7 @@ public class InterfacesAdder {
   /**
    * Modifications of source files after adding interfaces.
    */
-  record Modifications(SourceRoot source, List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications) {
+  public record Modifications(SourceRoot source, List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications) {
 
     /** Save all changes to disk. */
     public void save() {
@@ -211,7 +211,7 @@ public class InterfacesAdder {
       String[] interfacePackagesArray = interfacePackages.split(",");
       List<File> interfaceDirectories = new ArrayList<>();
       Set<Path> rootPackagePaths = new HashSet<>();
-      ClassLoader compileClassLoader = null;
+      ClassLoader compileClassLoader;
       if (compileClasspathElements != null && !compileClasspathElements.isEmpty()) {
         // Use this more capable class loader if the maven or gradle plugin is used
         compileClassLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);

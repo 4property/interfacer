@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
@@ -55,15 +56,18 @@ public class ClasspathInterfacesScanner {
   /** Create {@link Reflections} scanner. */
   public Reflections createReflections(ClassLoader classLoader, String[] interfacePackages) {
     FilterBuilder filterBuilder = new FilterBuilder();
+    List<URL> urls = new ArrayList<>();
     for (String interfacePackage : interfacePackages) {
       filterBuilder = filterBuilder.includePackage(interfacePackage);
+      urls.addAll(ClasspathHelper.forPackage(interfacePackage,classLoader));
     }
+
 
     return new Reflections(
         new ConfigurationBuilder()
             .addClassLoaders(classLoader)
-            .setUrls(ClasspathHelper.forClassLoader(classLoader))
-            .setScanners(Scanners.SubTypes.filterResultsBy(type -> true))
+            .setUrls(urls)
+            .setScanners(Scanners.SubTypes.filterResultsBy(s -> true))
             .filterInputsBy(filterBuilder));
   }
 

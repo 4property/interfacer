@@ -13,6 +13,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import pl.matsuo.interfacer.model.ref.MethodReference;
@@ -65,4 +67,12 @@ public class ClassIfcResolve extends AbstractIfcResolve {
         TypeVariable::getName,
         tp -> new TypeVariableReference(tp, null));
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ClassIfcResolve that)) return false;
+    return Objects.equals(getName(), that.getName());
+  }
+
 }

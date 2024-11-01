@@ -62,4 +62,9 @@ public abstract class AbstractIfcResolve implements IfcResolve {
   }
 
   protected abstract Map<String, TypeVariableReference> typeVariables();
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getName());
+    }
 }

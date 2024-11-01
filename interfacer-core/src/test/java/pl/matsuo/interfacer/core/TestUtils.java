@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
@@ -68,8 +69,8 @@ public class TestUtils {
     }
 
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-        asList(compilationUnitParseResult),
-        asList(genericInterface),
+            List.of(compilationUnitParseResult),
+            List.of(genericInterface),
         parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
@@ -105,7 +106,7 @@ public class TestUtils {
     }
 
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-        asList(compilationUnitParseResult),
+            List.of(compilationUnitParseResult),
         ifcResolves,
         parsingContext.javaParser);
 
@@ -144,7 +145,7 @@ public class TestUtils {
     }
 
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-        asList(compilationUnitParseResult), ifcResolves,
+            List.of(compilationUnitParseResult), ifcResolves,
         parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
@@ -153,7 +154,7 @@ public class TestUtils {
   }
 
   private static File fileForResource(String resourcePath) {
-    return new File(TestUtils.class.getResource(resourcePath).getFile());
+    return new File(Objects.requireNonNull(TestUtils.class.getResource(resourcePath)).getFile());
   }
 
 }
