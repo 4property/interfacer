@@ -2,12 +2,10 @@ package pl.matsuo.interfacer.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import java.io.File;
-import java.net.URL;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -26,8 +24,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/SampleClass.java", HasName.class);
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -35,8 +33,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample21Class.java", HasName.class, "21");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -44,8 +42,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample18Class.java", HasName.class, "18");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -53,8 +51,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample18Class.java", HasName.class, "CURRENT");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -62,8 +60,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample17Class.java", HasName.class, "17");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -71,8 +69,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample16Class.java", HasName.class, "16");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -80,8 +78,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample11Class.java", HasName.class, "11");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -89,8 +87,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/Sample11Class.java", HasName.class, "POPULAR");
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -98,9 +96,9 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/SampleClass.java", HasName.class, SampleInterface.class);
     assertEquals(2, modifications.size());
-    assertEquals(2, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("HasName", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
-    assertEquals("SampleInterface", modifications.get(0).getValue().getImplementedTypes().get(1).getNameAsString());
+    assertEquals(2, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("HasName", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
+    assertEquals("SampleInterface", modifications.getFirst().getValue().getImplementedTypes().getLast().getNameAsString());
   }
 
   @Test
@@ -108,8 +106,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/SampleGenericClass.java", GenericInterface.class);
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("GenericInterface", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("GenericInterface", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test
@@ -124,8 +122,8 @@ public class TestInterfacesAdder {
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = TestUtils.doTestInterface(
         "/classes/test/SampleMutableClass.java", MutableOwner.class);
     assertEquals(1, modifications.size());
-    assertEquals(1, modifications.get(0).getValue().getImplementedTypes().size());
-    assertEquals("MutableOwner", modifications.get(0).getValue().getImplementedTypes().get(0).getNameAsString());
+    assertEquals(1, modifications.getFirst().getValue().getImplementedTypes().size());
+    assertEquals("MutableOwner", modifications.getFirst().getValue().getImplementedTypes().getFirst().getNameAsString());
   }
 
   @Test

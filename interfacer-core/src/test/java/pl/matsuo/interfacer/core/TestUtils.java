@@ -1,6 +1,5 @@
 package pl.matsuo.interfacer.core;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
