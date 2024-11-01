@@ -202,12 +202,11 @@ public class InterfacesAdder {
     if (interfacesDirectory == null) {
       if (interfacePackages == null || interfacePackages.isEmpty()) {
         throw new IllegalArgumentException("""
-            No interface source defined, recieved arguments:
-                interfacesDirectory: %s
+            No interface source defined, received arguments:
                 interfacePackages: %s
                 languageLevel: %s
                 compileClasspathElements: %s""".formatted(
-            interfacesDirectory, interfacePackages, languageLevel, compileClasspathElements));
+             interfacePackages, languageLevel, compileClasspathElements));
       }
       String[] interfacePackagesArray = interfacePackages.split(",");
       List<File> interfaceDirectories = new ArrayList<>();
@@ -228,7 +227,11 @@ public class InterfacesAdder {
         } else {
           File packageDirectory = new File(packageURL.getPath());
           if (packageDirectory.exists() && packageDirectory.isDirectory()) {
-            if (rootPackagePaths.add(packageDirectory.toPath().toAbsolutePath().getParent())) {
+            Path packageFileRoot = packageDirectory.toPath().toAbsolutePath().getParent();
+            for (int i = 1; i < packagePath.split("/").length; i++) {
+              packageFileRoot = packageFileRoot.getParent();
+            }
+            if (rootPackagePaths.add(packageFileRoot)) {
               interfaceDirectories.add(packageDirectory);
             }
           }
@@ -236,9 +239,9 @@ public class InterfacesAdder {
       }
       return interfaceDirectories;
     } else {
-      if ((interfacePackages == null || interfacePackages.isEmpty()) && interfacesDirectory != null) {
+      if (interfacePackages == null || interfacePackages.isEmpty()) {
         return Collections.singletonList(interfacesDirectory);
-      } else if (interfacePackages != null && !interfacePackages.isEmpty()) {
+      } else {
         String[] interfacePackagesArray = interfacePackages.split(",");
         for (String interfacePackage : interfacePackagesArray) {
           String packagePath = interfacePackage.replace('.', '/');
@@ -249,8 +252,8 @@ public class InterfacesAdder {
                 interfacesDirectory));
           }
         }
+        return Collections.singletonList(interfacesDirectory);
       }
-      return Collections.singletonList(interfacesDirectory);
     }
   }
 
@@ -266,14 +269,15 @@ public class InterfacesAdder {
   /** Search for interfaces on classpath and in source folder. */
   public List<IfcResolve> scanInterfaces(List<File> interfacesDirectories, String interfacePackages,
       ParsingContext parsingContext) {
-    List<IfcResolve> ifcs = new ArrayList<>();
-    ifcs.addAll(
+    Set<IfcResolve> uniqueResolvers = new HashSet<>();
+    uniqueResolvers.addAll(
         new ClasspathInterfacesScanner()
             .scanInterfacesFromClasspath(
                 parsingContext.classLoader, interfacePackages, parsingContext.typeSolver));
-    ifcs.addAll(
+    uniqueResolvers.addAll(
         new SourceInterfacesScanner()
             .scanInterfacesFromSrc(parsingContext.parserConfiguration, interfacesDirectories));
+    List<IfcResolve> ifcs = new ArrayList<>(uniqueResolvers);
     Comparator<IfcResolve> comparator = comparing(i -> -i.getMethods().size());
     ifcs.sort(comparator);
     return ifcs;

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
+import java.io.File;
+import java.net.URL;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -128,10 +130,9 @@ public class TestInterfacesAdder {
 
   @Test
   public void testAllTargetClassesMatching() {
-    InterfacesAdder.Modifications modifications = TestUtils.doTestInterfaceMatching("/classes/test/", HasName.class,
-        "21");
-    // TODO to be completed  when the logic is implemented fully
-    assertTrue(modifications.isEmpty());
+    File resourceDir = new File("src/test/resources/classes/test/");
+    InterfacesAdder.Modifications modifications = TestUtils.doTestInterfaceMatching(resourceDir, HasName.class, "21");
+    assertFalse(modifications.isEmpty());
   }
 
 }

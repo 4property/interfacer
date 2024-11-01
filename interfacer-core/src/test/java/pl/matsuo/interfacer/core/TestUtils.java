@@ -21,28 +21,23 @@ import pl.matsuo.interfacer.model.ifc.IfcResolve;
 @Slf4j
 public class TestUtils {
 
-  public static InterfacesAdder.Modifications doTestInterfaceMatching(String classResourcePath, Class<?> ifc,
+  public static InterfacesAdder.Modifications doTestInterfaceMatching(File classResourceDir, Class<?> ifc,
       String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
-    File scanDir = TestUtils.fileForResource(classResourcePath);
-
-    return interfacesAdder.parseAll(scanDir, null, ifc.getPackageName(), javaVersion, emptyList());
+    
+    return interfacesAdder.parseAll(classResourceDir, null, ifc.getPackageName(), javaVersion, emptyList());
   }
 
-  public static InterfacesAdder.Modifications doTestInterfaceMatching(String classResourcePath, String interfacePackage,
+  public static InterfacesAdder.Modifications doTestInterfaceMatching(File classResourceDir, String interfacePackage,
       String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
-    File scanDir = TestUtils.fileForResource(classResourcePath);
-
-    return interfacesAdder.parseAll(scanDir, null, interfacePackage, javaVersion, emptyList());
+    return interfacesAdder.parseAll(classResourceDir, null, interfacePackage, javaVersion, emptyList());
   }
 
-  public static InterfacesAdder.Modifications doTestInterfaceMatching(String classResourcePath, File interfaceDirectory,
+  public static InterfacesAdder.Modifications doTestInterfaceMatching(File classResourceDir, File interfaceDirectory,
       String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
-    File scanDir = TestUtils.fileForResource(classResourcePath);
-
-    return interfacesAdder.parseAll(scanDir, interfaceDirectory, "", javaVersion, emptyList());
+    return interfacesAdder.parseAll(classResourceDir, interfaceDirectory, "", javaVersion, emptyList());
   }
 
   public static List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(
@@ -50,8 +45,8 @@ public class TestUtils {
     return doTestInterface(className, ifc, "21");
   }
 
-  public static List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className,
-      Class<?> ifc, String javaVersion) {
+  public static List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className, Class<?> ifc,
+      String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
 
     File sampleClassFile = TestUtils.fileForResource(className);
