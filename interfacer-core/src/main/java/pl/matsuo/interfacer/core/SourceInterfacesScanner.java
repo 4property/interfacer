@@ -33,6 +33,7 @@ public class SourceInterfacesScanner {
     }
 
     for (File interfacesDirectory : interfacesDirectories) {
+      Log.info(() -> "Scanning interfaces from directory: " + interfacesDirectory.getAbsolutePath());
       final SourceRoot source = new SourceRoot(interfacesDirectory.toPath(), parserConfiguration);
       try {
         for (ParseResult<CompilationUnit> parseResult : source.tryToParse()) {

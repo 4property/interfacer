@@ -11,7 +11,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import pl.matsuo.interfacer.core.log.Log;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
@@ -21,7 +21,6 @@ import pl.matsuo.interfacer.model.ifc.ClassIfcResolve;
 import pl.matsuo.interfacer.model.ifc.IfcResolve;
 
 /** Implements scanning classpath for interfaces that should be used during interface adding. */
-@Slf4j
 public class ClasspathInterfacesScanner {
 
   /**
@@ -44,9 +43,9 @@ public class ClasspathInterfacesScanner {
 
   /** Create {@link IfcResolve} for <code>type</code> if it is representing interface. */
   public IfcResolve processClassFromClasspath(Class<?> type, TypeSolver typeSolver) {
-    log.info("Processing classpath type: " + type.getCanonicalName());
+      Log.info(() -> "Processing classpath type: " + type.getCanonicalName());
     if (type.isInterface()) {
-      log.info("Adding interface: " + type.getName());
+        Log.info(() -> "Adding interface: " + type.getCanonicalName());
       return new ClassIfcResolve(type, typeSolver);
     }
 
@@ -62,7 +61,6 @@ public class ClasspathInterfacesScanner {
       urls.addAll(ClasspathHelper.forPackage(interfacePackage,classLoader));
     }
 
-
     return new Reflections(
         new ConfigurationBuilder()
             .addClassLoaders(classLoader)
@@ -73,8 +71,9 @@ public class ClasspathInterfacesScanner {
 
   /** Create classloader based on <code>compileClasspathElements</code> urls. */
   public static ClassLoader getCompileClassLoader(List<String> compileClasspathElements) {
+    Log.info(() -> "Creating URLClassloader from compileClasspathElements");
     List<URL> jars = map(compileClasspathElements, ClasspathInterfacesScanner::toUrl);
-    jars.forEach(element -> log.info("Compile classloader entry: " + element));
+    jars.forEach(element -> Log.info(() -> "Adding classloader entry: " + element));
 
     return new URLClassLoader(jars.toArray(new URL[0]));
   }
