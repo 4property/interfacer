@@ -31,6 +31,7 @@ public class ParsingContext {
         .setSymbolResolver(new JavaSymbolSolver(typeSolver))
         .setLanguageLevel(getEnumFor(languageLevel))
         .setLexicalPreservationEnabled(true);
+    Log.debug(() -> "[ParsingContext] Creating Java Parser with custom parse config.");
     javaParser = new JavaParser(parserConfiguration);
   }
 
@@ -42,7 +43,7 @@ public class ParsingContext {
    */
   private LanguageLevel getEnumFor(String languageLevel) {
     if (languageLevel == null || languageLevel.isEmpty()) {
-      Log.debug(() -> "Language level is empty, using CURRENT");
+      Log.debug(() -> "[ParsingContext] Language level is empty, using CURRENT");
       return LanguageLevel.CURRENT;
     }
     var result = switch (languageLevel.toUpperCase()) {
@@ -58,7 +59,7 @@ public class ParsingContext {
         yield LanguageLevel.valueOf(languageLevel);
       }
     };
-    Log.debug(() -> "Language level: %s".formatted(result));
+    Log.debug(() -> "[ParsingContext] Language level: %s".formatted(result));
     return result;
   }
 
@@ -72,8 +73,10 @@ public class ParsingContext {
     combinedTypeSolver.add(new ClassLoaderTypeSolver(classLoader));
     ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(getEnumFor(languageLevel))
         .setLexicalPreservationEnabled(true);
+    Log.debug(() -> "[ParsingContext] Creating Java Parser Type Solver from: " + scanDirectory.getAbsolutePath());
     combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath(), parserConfiguration));
     for (File interfacesDirectory : interfacesDirectories) {
+      Log.debug(() -> "[ParsingContext] Creating Java Parser Type Solver from: " + interfacesDirectory.getAbsolutePath());
       combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath(), parserConfiguration));
     }
     return combinedTypeSolver;

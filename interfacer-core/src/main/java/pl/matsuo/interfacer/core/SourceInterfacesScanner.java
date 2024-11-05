@@ -33,7 +33,7 @@ public class SourceInterfacesScanner {
     }
 
     for (File interfacesDirectory : interfacesDirectories) {
-      Log.info(() -> "Scanning interfaces from directory: " + interfacesDirectory.getAbsolutePath());
+      Log.info(() -> "[SourceInterfacesScanner] Scanning interfaces from directory: " + interfacesDirectory.getAbsolutePath());
       final SourceRoot source = new SourceRoot(interfacesDirectory.toPath(), parserConfiguration);
       try {
         for (ParseResult<CompilationUnit> parseResult : source.tryToParse()) {
@@ -54,8 +54,8 @@ public class SourceInterfacesScanner {
                 .map(Problem::toString)
                 .collect(Collectors.joining("\n"));
             String msgBlock = """
-                Parse failure on directory: %s
-                    Problems: %s
+                [SourceInterfacesScanner] Parse failure on directory: %s
+                                          Problems: %s
                 """.formatted(interfacesDirectory, problems);
             Log.warn(() -> msgBlock);
           }

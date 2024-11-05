@@ -43,9 +43,9 @@ public class ClasspathInterfacesScanner {
 
   /** Create {@link IfcResolve} for <code>type</code> if it is representing interface. */
   public IfcResolve processClassFromClasspath(Class<?> type, TypeSolver typeSolver) {
-      Log.info(() -> "Processing classpath type: " + type.getCanonicalName());
+      Log.debug(() -> "[ClasspathInterfacesScanner] Processing classpath type: " + type.getCanonicalName());
     if (type.isInterface()) {
-        Log.info(() -> "Adding interface: " + type.getCanonicalName());
+        Log.info(() -> "[ClasspathInterfacesScanner] Adding interface: " + type.getCanonicalName());
       return new ClassIfcResolve(type, typeSolver);
     }
 
@@ -74,9 +74,9 @@ public class ClasspathInterfacesScanner {
     if(compileClasspathElements.isEmpty()){
       return ClasspathInterfacesScanner.class.getClassLoader();
     }
-    Log.info(() -> "Creating URLClassloader from maven or gradle plugin provided class path.");
+    Log.info(() -> "[ClasspathInterfacesScanner] Creating URLClassloader from maven or gradle plugin provided class path.");
     List<URL> jars = map(compileClasspathElements, ClasspathInterfacesScanner::toUrl);
-    jars.forEach(element -> Log.info(() -> "Adding classloader entry: " + element));
+    jars.forEach(element -> Log.info(() -> "[ClasspathInterfacesScanner] Adding classloader entry: " + element));
 
     return new URLClassLoader(jars.toArray(new URL[0]));
   }

@@ -124,7 +124,7 @@ public class InterfacesAdder {
           interfacesDirectory, interfacePackages, languageLevel, compileClasspathElements));
     }
 
-    Log.info(() -> "Start processing");
+    Log.info(() -> "[InterfacesAdder] Start processing");
 
     try {
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications = new ArrayList<>();
@@ -138,7 +138,7 @@ public class InterfacesAdder {
             allModifications);
 
         if (!modifications.isEmpty()) {
-          Log.info(() -> "End of processing");
+          Log.info(() -> "[InterfacesAdder] End of processing");
           break;
         }
       }
@@ -187,7 +187,7 @@ public class InterfacesAdder {
       modifications = processAllFiles(source.tryToParse(), ifcs,
               parsingContext.javaParser);
     } catch (IOException e) {
-      Log.error(() -> "Error reading from source directory", () -> e);
+      Log.error(() -> "[InterfacesAdder] Error reading from source directory", () -> e);
     }
     return new Modifications(source, modifications);
   }
@@ -234,7 +234,7 @@ public class InterfacesAdder {
         String packagePath = interfacePackage.replace('.', '/');
         URL packageURL = compileClassLoader.getResource(packagePath);
         if (packageURL == null) {
-          Log.warn(() -> "Package: %s not found in classpath, ignoring!".formatted(interfacePackage));
+          Log.warn(() -> "[InterfacesAdder] Package: %s not found in classpath, ignoring!".formatted(interfacePackage));
         } else {
           File packageDirectory = new File(packageURL.getPath());
           if (packageDirectory.exists() && packageDirectory.isDirectory()) {
@@ -256,7 +256,7 @@ public class InterfacesAdder {
                 String packagePath = interfacePackage.replace('.', '/');
                 File packageDirectory = new File(interfacesDirectory, packagePath);
                 if (!packageDirectory.exists() || !packageDirectory.isDirectory()) {
-                    Log.warn(() -> "Package: %s not found in the given interfaces directory: %s, ignoring!".formatted(
+                    Log.warn(() -> "[InterfacesAdder] Package: %s not found in the given interfaces directory: %s, ignoring!".formatted(
                             interfacePackage,
                             interfacesDirectory));
                 }
@@ -314,7 +314,7 @@ public class InterfacesAdder {
                     })
                 .orElse(emptyList());
           } else {
-            Log.warn(() -> "Parse failure for " + parseResult.getProblems());
+            Log.warn(() -> "[InterfacesAdder] Parse failure for " + parseResult.getProblems());
             return emptyList();
           }
         });
@@ -367,7 +367,7 @@ public class InterfacesAdder {
       IfcResolve ifc,
       JavaParser javaParser,
       Map<String, String> resolvedTypeVariables) {
-    Log.info(() -> "Modifying the class: %s with interface: %s".formatted(declaration.getFullyQualifiedName().orElse(""), ifc.getName()));
+    Log.info(() -> "[InterfacesAdder] Modifying the class: %s with interface: %s".formatted(declaration.getFullyQualifiedName().orElse(""), ifc.getName()));
 
     ClassOrInterfaceType type = // new ClassOrInterfaceType(ifc.getName());
         javaParser
