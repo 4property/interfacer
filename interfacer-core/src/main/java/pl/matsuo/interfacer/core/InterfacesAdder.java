@@ -48,6 +48,23 @@ public class InterfacesAdder {
     public boolean isEmpty() {
       return modifications.isEmpty();
     }
+
+    /** Get number of modifications. */
+    public int size() {
+      return modifications.size();
+    }
+
+    /**
+     * Check if modifications contain interface and matched fully qualified class
+     * name.
+     */
+    public boolean matchesAny(@NonNull String interfaceName,@NonNull String fqcn) {
+      return modifications.stream().anyMatch(modification -> {
+        String keyName = modification.getKey().getName();
+        String valueFqcn = modification.getValue().getFullyQualifiedName().orElse(null);
+        return interfaceName.equals(keyName) && fqcn.equals(valueFqcn);
+      });
+    }
   }
 
   /**
@@ -99,7 +116,7 @@ public class InterfacesAdder {
     if (interfacesDirectory == null
         && (interfacePackages == null || compileClasspathElements == null)) {
       throw new RuntimeException("""
-          No interface source defined, recieved arguments:
+          No interface source defined, received arguments:
               interfacesDirectory: %s
               interfacePackages: %s
               languageLevel: %s
@@ -177,7 +194,7 @@ public class InterfacesAdder {
    * <code>interfacesDirectory</code> is provided, it will try to find interfaces
    * on classpath using the <code>interfacePackages</code> argument. The method
    * will drop quietly with a warning packages that do not exist on classpath or
-   * that cannpot be found in the directory structure.
+   * that cannot be found in the directory structure.
    * <p>
    * If the argument <code>interfacesDirectory</code> is provided along with
    * valid <code>interfacePackages</code>, it will be scanned for all packages
@@ -206,7 +223,7 @@ public class InterfacesAdder {
                 interfacePackages: %s
                 languageLevel: %s
                 compileClasspathElements: %s""".formatted(
-             interfacePackages, languageLevel, compileClasspathElements));
+            interfacePackages, languageLevel, compileClasspathElements));
       }
       String[] interfacePackagesArray = interfacePackages.split(",");
       List<File> interfaceDirectories = new ArrayList<>();
@@ -239,21 +256,19 @@ public class InterfacesAdder {
       }
       return interfaceDirectories;
     } else {
-      if (interfacePackages == null || interfacePackages.isEmpty()) {
-        return Collections.singletonList(interfacesDirectory);
-      } else {
-        String[] interfacePackagesArray = interfacePackages.split(",");
-        for (String interfacePackage : interfacePackagesArray) {
-          String packagePath = interfacePackage.replace('.', '/');
-          File packageDirectory = new File(interfacesDirectory, packagePath);
-          if (!packageDirectory.exists() || !packageDirectory.isDirectory()) {
-            Log.warn(() -> "Package: %s not found in the given interfaces directory: %s, ignoring!".formatted(
-                interfacePackage,
-                interfacesDirectory));
-          }
+        if (interfacePackages != null && !interfacePackages.isEmpty()) {
+            String[] interfacePackagesArray = interfacePackages.split(",");
+            for (String interfacePackage : interfacePackagesArray) {
+                String packagePath = interfacePackage.replace('.', '/');
+                File packageDirectory = new File(interfacesDirectory, packagePath);
+                if (!packageDirectory.exists() || !packageDirectory.isDirectory()) {
+                    Log.warn(() -> "Package: %s not found in the given interfaces directory: %s, ignoring!".formatted(
+                            interfacePackage,
+                            interfacesDirectory));
+                }
+            }
         }
         return Collections.singletonList(interfacesDirectory);
-      }
     }
   }
 
@@ -358,7 +373,7 @@ public class InterfacesAdder {
       IfcResolve ifc,
       JavaParser javaParser,
       Map<String, String> resolvedTypeVariables) {
-    Log.info(() -> "Modifying the class: %s with ifc %s".formatted(declaration.getFullyQualifiedName(), ifc.getName()));
+    Log.info(() -> "Modifying the class: %s with interface: %s".formatted(declaration.getFullyQualifiedName().orElse(""), ifc.getName()));
 
     ClassOrInterfaceType type = // new ClassOrInterfaceType(ifc.getName());
         javaParser

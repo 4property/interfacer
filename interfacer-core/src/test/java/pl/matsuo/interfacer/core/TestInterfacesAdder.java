@@ -2,6 +2,7 @@ package pl.matsuo.interfacer.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
@@ -127,10 +128,37 @@ public class TestInterfacesAdder {
   }
 
   @Test
-  public void testAllTargetClassesMatching() {
+  public void testAllTargetClassesMatchingGivenResourceDir() {
     File resourceDir = new File("src/test/resources/classes/test/");
     InterfacesAdder.Modifications modifications = TestUtils.doTestInterfaceMatching(resourceDir, HasName.class, "21");
     assertFalse(modifications.isEmpty());
+    assertEquals(9, modifications.size());
+    assertTrue(modifications.matchesAny(MutableOwner.class.getCanonicalName(), "test.SampleMutableClass"));
+    assertTrue(modifications.matchesAny(GenericInterface.class.getCanonicalName(), "test.SampleGenericClass"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample11Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample16Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample17Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample18Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample21Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.SampleClass"));
+    assertTrue(modifications.matchesAny(SampleInterface.class.getCanonicalName(), "test.SampleClass"));
+  }
+
+  @Test
+  public void testAllTargetClassesMatchingGivenInterfacePackage() {
+    File resourceDir = new File("src/test/resources/classes/test/");
+    InterfacesAdder.Modifications modifications = TestUtils.doTestInterfaceMatching(resourceDir, "pl.matsuo.interfacer.showcase", "21");
+    assertFalse(modifications.isEmpty());
+    assertEquals(9, modifications.size());
+    assertTrue(modifications.matchesAny(MutableOwner.class.getCanonicalName(), "test.SampleMutableClass"));
+    assertTrue(modifications.matchesAny(GenericInterface.class.getCanonicalName(), "test.SampleGenericClass"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample11Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample16Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample17Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample18Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.Sample21Class"));
+    assertTrue(modifications.matchesAny(HasName.class.getCanonicalName(), "test.SampleClass"));
+    assertTrue(modifications.matchesAny(SampleInterface.class.getCanonicalName(), "test.SampleClass"));
   }
 
 }
