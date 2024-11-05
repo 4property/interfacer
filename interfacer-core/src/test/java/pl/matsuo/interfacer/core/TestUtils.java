@@ -51,8 +51,8 @@ public class TestUtils {
 
     File sampleClassFile = TestUtils.fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
-
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, Collections.singletonList(scanDir),
+    ClassLoader loader = ClasspathInterfacesScanner.getCompileClassLoader(emptyList());
+    ParsingContext parsingContext = new ParsingContext(loader, scanDir, Collections.singletonList(scanDir),
         javaVersion);
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
@@ -83,8 +83,8 @@ public class TestUtils {
 
     File sampleClassFile = TestUtils.fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
-
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, Collections.singletonList(scanDir), "21");
+    ClassLoader loader = ClasspathInterfacesScanner.getCompileClassLoader(emptyList());
+    ParsingContext parsingContext = new ParsingContext(loader, scanDir, Collections.singletonList(scanDir), "21");
 
     ClasspathInterfacesScanner interfacesScanner = new ClasspathInterfacesScanner();
     List<IfcResolve> ifcResolves = new ArrayList<>();
@@ -126,8 +126,8 @@ public class TestUtils {
 
     File sampleClassFile = TestUtils.fileForResource(className);
     File scanDir = sampleClassFile.getParentFile();
-
-    ParsingContext parsingContext = new ParsingContext(emptyList(), scanDir, Collections.singletonList(interfacesDir),
+    ClassLoader loader = ClasspathInterfacesScanner.getCompileClassLoader(emptyList());
+    ParsingContext parsingContext = new ParsingContext(loader, scanDir, Collections.singletonList(interfacesDir),
         javaVersion);
 
     SourceInterfacesScanner interfacesScanner = new SourceInterfacesScanner();

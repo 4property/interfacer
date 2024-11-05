@@ -71,7 +71,10 @@ public class ClasspathInterfacesScanner {
 
   /** Create classloader based on <code>compileClasspathElements</code> urls. */
   public static ClassLoader getCompileClassLoader(List<String> compileClasspathElements) {
-    Log.info(() -> "Creating URLClassloader from compileClasspathElements");
+    if(compileClasspathElements.isEmpty()){
+      return ClasspathInterfacesScanner.class.getClassLoader();
+    }
+    Log.info(() -> "Creating URLClassloader from maven or gradle plugin provided class path.");
     List<URL> jars = map(compileClasspathElements, ClasspathInterfacesScanner::toUrl);
     jars.forEach(element -> Log.info(() -> "Adding classloader entry: " + element));
 

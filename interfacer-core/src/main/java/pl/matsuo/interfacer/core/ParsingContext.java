@@ -21,11 +21,11 @@ public class ParsingContext {
   final JavaParser javaParser;
 
   public ParsingContext(
-      List<String> compileClasspathElements,
+      ClassLoader compileClasspathElementsLoader,
       @NonNull File scanDirectory,
       @NonNull List<File> interfacesDirectories,
       @NonNull String languageLevel) {
-    classLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
+    classLoader = compileClasspathElementsLoader;
     typeSolver = createCombinedSolver(scanDirectory, interfacesDirectories, classLoader, languageLevel);
     parserConfiguration = new ParserConfiguration()
         .setSymbolResolver(new JavaSymbolSolver(typeSolver))

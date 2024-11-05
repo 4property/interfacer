@@ -168,20 +168,24 @@ public class InterfacesAdder {
   }
 
   Modifications parseAll(File scanDirectory, File interfacesDirectory,
-      String interfacePackages, String languageLevel, List<String> compileClasspathElements) {
+                         String interfacePackages, String languageLevel, List<String> compileClasspathElements) {
+
+    // Use this more capable class loader if the maven or gradle plugin is used
+    ClassLoader compileClassLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
+
     List<File> interfacesDirectories = processInterfaces(interfacesDirectory, interfacePackages, languageLevel,
-        compileClasspathElements);
-    ParsingContext parsingContext = new ParsingContext(compileClasspathElements, scanDirectory, interfacesDirectories,
-        languageLevel);
+            compileClassLoader);
+    ParsingContext parsingContext = new ParsingContext(compileClassLoader, scanDirectory, interfacesDirectories,
+            languageLevel);
 
     final SourceRoot source = new SourceRoot(scanDirectory.toPath(), parsingContext.parserConfiguration);
 
     List<IfcResolve> ifcs = scanInterfaces(interfacesDirectories, interfacePackages, parsingContext);
 
-    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = Collections.emptyList();
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = emptyList();
     try {
       modifications = processAllFiles(source.tryToParse(), ifcs,
-          parsingContext.javaParser);
+              parsingContext.javaParser);
     } catch (IOException e) {
       Log.error(() -> "Error reading from source directory", () -> e);
     }
@@ -209,33 +213,23 @@ public class InterfacesAdder {
    * @param interfacePackages        packages to scan for interfaces
    * @param languageLevel            language level to use when parsing source
    *                                 files
-   * @param compileClasspathElements classpath elements to use when scanning for
-   *                                 interfaces
+   * @param compileClassLoader      a class loader to use when scanning for interfaces
    *
    * @return list of directories to scan for interfaces
    */
   private List<File> processInterfaces(File interfacesDirectory, String interfacePackages, String languageLevel,
-      List<String> compileClasspathElements) {
+                                       ClassLoader compileClassLoader) {
     if (interfacesDirectory == null) {
       if (interfacePackages == null || interfacePackages.isEmpty()) {
         throw new IllegalArgumentException("""
-            No interface source defined, received arguments:
-                interfacePackages: %s
-                languageLevel: %s
-                compileClasspathElements: %s""".formatted(
-            interfacePackages, languageLevel, compileClasspathElements));
+                No interface source defined, received arguments:
+                    interfacePackages: %s
+                    languageLevel: %s""".formatted(
+                interfacePackages, languageLevel));
       }
       String[] interfacePackagesArray = interfacePackages.split(",");
       List<File> interfaceDirectories = new ArrayList<>();
       Set<Path> rootPackagePaths = new HashSet<>();
-      ClassLoader compileClassLoader;
-      if (compileClasspathElements != null && !compileClasspathElements.isEmpty()) {
-        // Use this more capable class loader if the maven or gradle plugin is used
-        compileClassLoader = ClasspathInterfacesScanner.getCompileClassLoader(compileClasspathElements);
-      } else {
-        // Use this class loader if the command line interface is used
-        compileClassLoader = getClass().getClassLoader();
-      }
       for (String interfacePackage : interfacePackagesArray) {
         String packagePath = interfacePackage.replace('.', '/');
         URL packageURL = compileClassLoader.getResource(packagePath);
