@@ -33,9 +33,10 @@
   </developers>
 
   <modules>
+    <module>sample-interfaces</module>
     <module>interfacer-core</module>
     <module>interfacer-maven-plugin</module>
-    <module>sample-interfaces</module>
+    <module>interfacer-maven-integration-tests</module>
     <module>use-plugin</module>
   </modules>
 
