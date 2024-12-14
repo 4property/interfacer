@@ -59,7 +59,7 @@
       <plugin>
         <groupId>pl.matsuo.interfacer</groupId>
         <artifactId>interfacer-maven-plugin</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.2.4-SNAPSHOT</version>
         <executions>
           <execution>
             <phase>process-sources</phase>
