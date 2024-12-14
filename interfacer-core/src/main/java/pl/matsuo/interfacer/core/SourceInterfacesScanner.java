@@ -29,14 +29,26 @@ public class SourceInterfacesScanner {
 
     // do not scan anything if source directory was not specified
     if (interfacesDirectories == null || interfacesDirectories.isEmpty()) {
+      Log.debug(() -> "[SourceInterfacesScanner] No interface directories to scan");
       return ifcs;
     }
 
     for (File interfacesDirectory : interfacesDirectories) {
-      Log.info(() -> "[SourceInterfacesScanner] Scanning interfaces from directory: " + interfacesDirectory.getAbsolutePath());
+      if (!interfacesDirectory.exists() || !interfacesDirectory.isDirectory()) {
+        Log.warn(() -> "[SourceInterfacesScanner] Directory does not exist or is not a directory: " + interfacesDirectory.getAbsolutePath());
+        continue;
+      }
+
+      Log.debug(() -> "[SourceInterfacesScanner] Scanning interfaces from directory: " + interfacesDirectory.getAbsolutePath());
       final SourceRoot source = new SourceRoot(interfacesDirectory.toPath(), parserConfiguration);
       try {
-        for (ParseResult<CompilationUnit> parseResult : source.tryToParse()) {
+        List<ParseResult<CompilationUnit>> parseResults = source.tryToParse();
+        if (parseResults.isEmpty()) {
+          Log.debug(() -> "[SourceInterfacesScanner] No source files found in: " + interfacesDirectory.getAbsolutePath());
+          continue;
+        }
+
+        for (ParseResult<CompilationUnit> parseResult : parseResults) {
           // Only deal with files without parse errors
           if (parseResult.isSuccessful()) {
             parseResult
@@ -46,6 +58,7 @@ public class SourceInterfacesScanner {
                       // Do the actual logic
                       IfcResolve ifcResolve = getIfcResolve(cu);
                       if (ifcResolve != null) {
+                        Log.debug(() -> "[SourceInterfacesScanner] Found interface: " + ifcResolve.getName());
                         ifcs.add(ifcResolve);
                       }
                     });
@@ -61,7 +74,10 @@ public class SourceInterfacesScanner {
           }
         }
       } catch (IOException e) {
-        throw new RuntimeException("Error reading from source directory", e);
+        Log.error(() -> "[SourceInterfacesScanner] Error reading from source directory: " + interfacesDirectory.getAbsolutePath(), () -> e);
+      } finally {
+        Log.debug(() -> "[SourceInterfacesScanner] Completed scan of: " + interfacesDirectory.getAbsolutePath() + 
+            " found " + ifcs.size() + " interfaces");
       }
     }
 
@@ -74,11 +90,14 @@ public class SourceInterfacesScanner {
    */
   public IfcResolve getIfcResolve(CompilationUnit compilationUnit) {
     return compilationUnit
-        .getPrimaryType()
-        .filter(BodyDeclaration::isClassOrInterfaceDeclaration)
-        .map(type -> (ClassOrInterfaceDeclaration) type)
-        .filter(ClassOrInterfaceDeclaration::isInterface)
-        .map(type -> new TypeDeclarationIfcResolve(compilationUnit, type))
-        .orElse(null);
+            .getPrimaryType()
+            .filter(BodyDeclaration::isClassOrInterfaceDeclaration)
+            .map(type -> (ClassOrInterfaceDeclaration) type)
+            .filter(ClassOrInterfaceDeclaration::isInterface)
+            .map(type -> {
+              Log.debug(() -> "[SourceInterfacesScanner] Resolved interface: " + type.getNameAsString());
+              return new TypeDeclarationIfcResolve(compilationUnit, type);
+            })
+            .orElse(null);
   }
 }

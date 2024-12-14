@@ -20,19 +20,54 @@ public interface Adapter {
 
   void debug(Supplier<String> message);
 
+  boolean isDebugEnabled();
+
+  boolean isErrorEnabled();
+
+  boolean isInfoEnabled();
+
+  boolean isWarnEnabled();
+
+  boolean isTraceEnabled();
+
   /**
    * Returns a new Sl4j logging adapter if running directly from the IDE.
    * 
-   * @param name
-   * @return
+   * @param name A unique name for the logging adapter
    */
   static Adapter of(String name) {
     return new Adapter() {
-      Logger log = LoggerFactory.getLogger(name);
+      final Logger log = LoggerFactory.getLogger(name);
+
 
       @Override
       public void debug(Supplier<String> message) {
         log.debug(message.get());
+      }
+
+      @Override
+      public boolean isDebugEnabled() {
+        return log.isDebugEnabled();
+      }
+
+      @Override
+      public boolean isErrorEnabled() {
+        return log.isErrorEnabled();
+      }
+
+      @Override
+      public boolean isInfoEnabled() {
+        return log.isInfoEnabled();
+      }
+
+      @Override
+      public boolean isWarnEnabled() {
+        return log.isWarnEnabled();
+      }
+
+      @Override
+      public boolean isTraceEnabled() {
+        return log.isTraceEnabled();
       }
 
       @Override
@@ -59,6 +94,8 @@ public interface Adapter {
       public void warn(Supplier<String> messageSupplier, Supplier<Throwable> throwableSupplier) {
         log.warn(messageSupplier.get(), throwableSupplier.get());
       }
+
+
     };
   }
 }

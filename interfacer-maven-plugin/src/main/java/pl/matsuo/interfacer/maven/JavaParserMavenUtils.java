@@ -61,6 +61,33 @@ public class JavaParserMavenUtils {
           public void debug(Supplier<String> message) {
             log.debug(message.get());
           }
+
+            @Override
+            public boolean isDebugEnabled() {
+                return log.isDebugEnabled();
+            }
+
+            @Override
+            public boolean isErrorEnabled() {
+                return log.isErrorEnabled();
+            }
+
+            @Override
+            public boolean isInfoEnabled() {
+                return log.isInfoEnabled();
+            }
+
+            @Override
+            public boolean isWarnEnabled() {
+                return log.isWarnEnabled();
+            }
+
+            @Override
+            public boolean isTraceEnabled() {
+                return log.isDebugEnabled();
+            }
+
+
         });
   }
 }

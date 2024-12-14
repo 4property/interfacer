@@ -5,10 +5,10 @@
   <parent>
     <groupId>pl.matsuo.interfacer</groupId>
     <artifactId>interfacer-parent</artifactId>
-    <version>0.2.3-SNAPSHOT</version>
+    <version>0.2.4-SNAPSHOT</version>
   </parent>
   <artifactId>interfacer-core</artifactId>
-  <version>0.2.3-SNAPSHOT</version>
+  <version>0.2.4-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>    
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>pl.matsuo.interfacer</groupId>
       <artifactId>sample-interfaces</artifactId>
-      <version>0.2.3-SNAPSHOT</version>
+      <version>0.2.12-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

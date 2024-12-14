@@ -26,10 +26,11 @@ public class ParsingContext {
       @NonNull List<File> interfacesDirectories,
       @NonNull String languageLevel) {
     classLoader = compileClasspathElementsLoader;
-    typeSolver = createCombinedSolver(scanDirectory, interfacesDirectories, classLoader, languageLevel);
+    LanguageLevel languageLevelEnum = getEnumFor(languageLevel);
+    typeSolver = createCombinedSolver(scanDirectory, interfacesDirectories, classLoader, languageLevelEnum);
     parserConfiguration = new ParserConfiguration()
         .setSymbolResolver(new JavaSymbolSolver(typeSolver))
-        .setLanguageLevel(getEnumFor(languageLevel))
+        .setLanguageLevel(languageLevelEnum)
         .setLexicalPreservationEnabled(true);
     Log.debug(() -> "[ParsingContext] Creating Java Parser with custom parse config.");
     javaParser = new JavaParser(parserConfiguration);
@@ -59,7 +60,7 @@ public class ParsingContext {
         yield LanguageLevel.valueOf(languageLevel);
       }
     };
-    Log.debug(() -> "[ParsingContext] Language level: %s".formatted(result));
+    Log.debug(() -> "[ParsingContext] Resolved Language level: %s".formatted(result));
     return result;
   }
 
@@ -68,10 +69,10 @@ public class ParsingContext {
    * interface.
    */
   private CombinedTypeSolver createCombinedSolver(
-      File scanDirectory, List<File> interfacesDirectories, ClassLoader classLoader, String languageLevel) {
+      File scanDirectory, List<File> interfacesDirectories, ClassLoader classLoader, LanguageLevel languageLevel) {
     CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     combinedTypeSolver.add(new ClassLoaderTypeSolver(classLoader));
-    ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(getEnumFor(languageLevel))
+    ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(languageLevel)
         .setLexicalPreservationEnabled(true);
     Log.debug(() -> "[ParsingContext] Creating Java Parser Type Solver from: " + scanDirectory.getAbsolutePath());
     combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath(), parserConfiguration));

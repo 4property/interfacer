@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import pl.matsuo.interfacer.core.log.Log;
 import org.reflections.Reflections;
@@ -43,9 +44,13 @@ public class ClasspathInterfacesScanner {
 
   /** Create {@link IfcResolve} for <code>type</code> if it is representing interface. */
   public IfcResolve processClassFromClasspath(Class<?> type, TypeSolver typeSolver) {
-      Log.debug(() -> "[ClasspathInterfacesScanner] Processing classpath type: " + type.getCanonicalName());
+    Log.debug(() -> "[ClasspathInterfacesScanner] Fetched classpath type: " + type.getCanonicalName());
     if (type.isInterface()) {
-        Log.info(() -> "[ClasspathInterfacesScanner] Adding interface: " + type.getCanonicalName());
+      if (Log.isDebugEnabled()) {
+        Log.info(() -> "[ClasspathInterfacesScanner]  %s is interface type".formatted(type.getCanonicalName()));
+      } else {
+        Log.info(() -> "[ClasspathInterfacesScanner]  Added interface: %s".formatted(type.getCanonicalName()));
+      }
       return new ClassIfcResolve(type, typeSolver);
     }
 
@@ -54,11 +59,18 @@ public class ClasspathInterfacesScanner {
 
   /** Create {@link Reflections} scanner. */
   public Reflections createReflections(ClassLoader classLoader, String[] interfacePackages) {
+    Log.info(() -> "[ClasspathInterfacesScanner] Setting up reflection based scanning.");
     FilterBuilder filterBuilder = new FilterBuilder();
     List<URL> urls = new ArrayList<>();
     for (String interfacePackage : interfacePackages) {
+      Log.debug(() -> "[ClasspathInterfacesScanner] Added package %s for reflection based scan.".formatted(interfacePackage));
       filterBuilder = filterBuilder.includePackage(interfacePackage);
-      urls.addAll(ClasspathHelper.forPackage(interfacePackage,classLoader));
+      Collection<URL> packageUrls = ClasspathHelper.forPackage(interfacePackage, classLoader);
+      if(Log.isDebugEnabled()) {
+        Log.debug(() -> "[ClasspathInterfacesScanner] Found URLs for target package: %s".formatted(interfacePackage));
+        packageUrls.forEach(url -> Log.debug(() -> "-------------------------> Added url: %s".formatted(url.getPath())));
+      }
+      urls.addAll(packageUrls);
     }
 
     return new Reflections(

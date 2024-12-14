@@ -42,4 +42,20 @@ public class Log {
     public static void debug(Supplier<String> message) {
         adapter.debug(message);
     }
+
+    public static boolean isDebugEnabled() {
+        return adapter.isDebugEnabled();
+    }
+
+    public static boolean isErrorEnabled(){
+        return adapter.isErrorEnabled();
+    }
+
+    public static boolean isWarnEnabled(){
+        return adapter.isWarnEnabled();
+    }
+
+    public static boolean isInfoEnabled(){
+        return adapter.isInfoEnabled();
+    }
 }

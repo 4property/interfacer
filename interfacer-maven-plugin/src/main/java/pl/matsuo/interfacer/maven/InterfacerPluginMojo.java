@@ -73,7 +73,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
                             languageLevel,
                             getCombinedClasspathElements());
         } catch (Exception e) {
-            throw new MojoExecutionException("Error occurred", e);
+            throw new MojoExecutionException("Error occurred: " + e.getMessage(), e);
         }
     }
 
