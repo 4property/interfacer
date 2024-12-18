@@ -20,18 +20,13 @@ public class ParsingContext {
   final ParserConfiguration parserConfiguration;
   final JavaParser javaParser;
 
-  public ParsingContext(
-      ClassLoader compileClasspathElementsLoader,
-      @NonNull File scanDirectory,
-      @NonNull List<File> interfacesDirectories,
-      @NonNull String languageLevel) {
+  public ParsingContext(ClassLoader compileClasspathElementsLoader, @NonNull File scanDirectory,
+      @NonNull List<File> interfacesDirectories, @NonNull String languageLevel) {
     classLoader = compileClasspathElementsLoader;
     LanguageLevel languageLevelEnum = getEnumFor(languageLevel);
     typeSolver = createCombinedSolver(scanDirectory, interfacesDirectories, classLoader, languageLevelEnum);
-    parserConfiguration = new ParserConfiguration()
-        .setSymbolResolver(new JavaSymbolSolver(typeSolver))
-        .setLanguageLevel(languageLevelEnum)
-        .setLexicalPreservationEnabled(true);
+    parserConfiguration = new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver))
+        .setLanguageLevel(languageLevelEnum).setLexicalPreservationEnabled(true);
     Log.debug(() -> "[ParsingContext] Creating Java Parser with custom parse config.");
     javaParser = new JavaParser(parserConfiguration);
   }
@@ -48,17 +43,17 @@ public class ParsingContext {
       return LanguageLevel.CURRENT;
     }
     var result = switch (languageLevel.toUpperCase()) {
-      case "CURRENT" -> LanguageLevel.CURRENT;
-      case "POPULAR" -> LanguageLevel.POPULAR;
-      case "RAW" -> LanguageLevel.RAW;
-      case "LATEST" -> LanguageLevel.BLEEDING_EDGE;
-      default -> {
-        if (languageLevel.contains(".")) {
-          languageLevel = languageLevel.replace(".", "_");
-        }
-        languageLevel = "JAVA_" + languageLevel;
-        yield LanguageLevel.valueOf(languageLevel);
+    case "CURRENT" -> LanguageLevel.CURRENT;
+    case "POPULAR" -> LanguageLevel.POPULAR;
+    case "RAW" -> LanguageLevel.RAW;
+    case "LATEST" -> LanguageLevel.BLEEDING_EDGE;
+    default -> {
+      if (languageLevel.contains(".")) {
+        languageLevel = languageLevel.replace(".", "_");
       }
+      languageLevel = "JAVA_" + languageLevel;
+      yield LanguageLevel.valueOf(languageLevel);
+    }
     };
     Log.debug(() -> "[ParsingContext] Resolved Language level: %s".formatted(result));
     return result;
@@ -68,8 +63,8 @@ public class ParsingContext {
    * Create type solver used for type resolution when checking is class matching
    * interface.
    */
-  private CombinedTypeSolver createCombinedSolver(
-      File scanDirectory, List<File> interfacesDirectories, ClassLoader classLoader, LanguageLevel languageLevel) {
+  private CombinedTypeSolver createCombinedSolver(File scanDirectory, List<File> interfacesDirectories,
+      ClassLoader classLoader, LanguageLevel languageLevel) {
     CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     combinedTypeSolver.add(new ClassLoaderTypeSolver(classLoader));
     ParserConfiguration parserConfiguration = new ParserConfiguration().setLanguageLevel(languageLevel)
@@ -77,7 +72,8 @@ public class ParsingContext {
     Log.debug(() -> "[ParsingContext] Creating Java Parser Type Solver from: " + scanDirectory.getAbsolutePath());
     combinedTypeSolver.add(new JavaParserTypeSolver(scanDirectory.toPath(), parserConfiguration));
     for (File interfacesDirectory : interfacesDirectories) {
-      Log.debug(() -> "[ParsingContext] Creating Java Parser Type Solver from: " + interfacesDirectory.getAbsolutePath());
+      Log.debug(
+          () -> "[ParsingContext] Creating Java Parser Type Solver from: " + interfacesDirectory.getAbsolutePath());
       combinedTypeSolver.add(new JavaParserTypeSolver(interfacesDirectory.toPath(), parserConfiguration));
     }
     return combinedTypeSolver;

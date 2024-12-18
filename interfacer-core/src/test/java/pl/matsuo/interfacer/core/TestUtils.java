@@ -24,7 +24,7 @@ public class TestUtils {
   public static InterfacesAdder.Modifications doTestInterfaceMatching(File classResourceDir, Class<?> ifc,
       String javaVersion) {
     InterfacesAdder interfacesAdder = new InterfacesAdder();
-    
+
     return interfacesAdder.parseAll(classResourceDir, null, ifc.getPackageName(), javaVersion, emptyList());
   }
 
@@ -40,8 +40,7 @@ public class TestUtils {
     return interfacesAdder.parseAll(classResourceDir, interfaceDirectory, "", javaVersion, emptyList());
   }
 
-  public static List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(
-      String className, Class<?> ifc) {
+  public static List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> doTestInterface(String className, Class<?> ifc) {
     return doTestInterface(className, ifc, "21");
   }
 
@@ -67,10 +66,8 @@ public class TestUtils {
       log.info("" + compilationUnitParseResult.getProblems());
     }
 
-    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-            List.of(compilationUnitParseResult),
-            List.of(genericInterface),
-        parsingContext.javaParser);
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder
+        .processAllFiles(List.of(compilationUnitParseResult), List.of(genericInterface), parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
 
@@ -104,10 +101,8 @@ public class TestUtils {
       log.info("" + compilationUnitParseResult.getProblems());
     }
 
-    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-            List.of(compilationUnitParseResult),
-        ifcResolves,
-        parsingContext.javaParser);
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder
+        .processAllFiles(List.of(compilationUnitParseResult), ifcResolves, parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
 
@@ -143,9 +138,8 @@ public class TestUtils {
       log.info("" + compilationUnitParseResult.getProblems());
     }
 
-    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder.processAllFiles(
-            List.of(compilationUnitParseResult), ifcResolves,
-        parsingContext.javaParser);
+    List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = interfacesAdder
+        .processAllFiles(List.of(compilationUnitParseResult), ifcResolves, parsingContext.javaParser);
 
     modifications.forEach(mod -> log.info(mod.toString()));
 

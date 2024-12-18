@@ -28,11 +28,8 @@ public class TypeDeclarationIfcResolve extends AbstractIfcResolve {
 
   @Override
   public String getName() {
-    return compileUnit
-            .getPackageDeclaration()
-            .map(packageDeclaration -> packageDeclaration.getNameAsString() + ".")
-            .orElse("")
-        + declaration.getNameAsString();
+    return compileUnit.getPackageDeclaration().map(packageDeclaration -> packageDeclaration.getNameAsString() + ".")
+        .orElse("") + declaration.getNameAsString();
   }
 
   @Override
@@ -40,20 +37,16 @@ public class TypeDeclarationIfcResolve extends AbstractIfcResolve {
     if (declaration.getTypeParameters().isEmpty()) {
       return getName();
     } else {
-      return getName()
-          + "<"
-          + join(", ", map(declaration.getTypeParameters(), tp -> typeParams.get(tp.getName())))
+      return getName() + "<" + join(", ", map(declaration.getTypeParameters(), tp -> typeParams.get(tp.getName().asString())))
           + ">";
     }
   }
 
   @Override
   public List<MethodReference> getMethods() {
-    return filterMap(
-        declaration.resolve().getAllMethods(),
-        method ->
-            !method.declaringType().getPackageName().equals("java.lang")
-                || !method.declaringType().getClassName().equals("Object"),
+    return filterMap(declaration.resolve().getAllMethods(),
+        method -> !method.declaringType().getPackageName().equals("java.lang")
+            || !method.declaringType().getClassName().equals("Object"),
         MethodUsageReference::new);
   }
 
@@ -64,16 +57,15 @@ public class TypeDeclarationIfcResolve extends AbstractIfcResolve {
 
   @Override
   protected Map<String, TypeVariableReference> typeVariables() {
-    return toMap(
-        declaration.getTypeParameters(),
-        TypeParameter::asString,
-        tp -> new TypeVariableReference(null, tp));
+    return toMap(declaration.getTypeParameters(), TypeParameter::asString, tp -> new TypeVariableReference(null, tp));
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof TypeDeclarationIfcResolve that)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof TypeDeclarationIfcResolve that))
+      return false;
     return Objects.equals(getName(), that.getName());
   }
 

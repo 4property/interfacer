@@ -17,10 +17,12 @@ public interface IfcResolve {
   ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration();
 
   /**
-   * Return list of interface's type params specifications required to match this interface by the
-   * declaration. If class is not generic, returns empty list if declaration fulfills interface.
+   * Return list of interface's type params specifications required to match this
+   * interface by the declaration. If class is not generic, returns empty list if
+   * declaration fulfills interface.
    *
-   * <p>Returns null if declaration does not match with interface.
+   * <p>
+   * Returns null if declaration does not match with interface.
    */
   Map<String, String> matches(ClassOrInterfaceDeclaration declaration);
 }

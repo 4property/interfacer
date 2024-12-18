@@ -18,25 +18,25 @@ public class TestGeneratedResources {
 
   @Test
   public void checkImplementedTypes() {
-    assertTrue("",IKeyValue.class.isAssignableFrom(BasicKeyValue.class));
-    assertTrue(IKeyValueProvider.class.isAssignableFrom(KeyValueReference.class));
-    assertTrue(HasKey.class.isAssignableFrom(KeyValueReference.class));
+    assertTrue("IKeyValue is not implemented by BasicKeyValue!", IKeyValue.class.isAssignableFrom(BasicKeyValue.class));
+    assertTrue("IKeyValueProvider is not implemented by KeyValueReference!", IKeyValueProvider.class.isAssignableFrom(KeyValueReference.class));
+    assertTrue("HasKey is not implemented by KeyValueReference!", HasKey.class.isAssignableFrom(KeyValueReference.class));
 
-    assertTrue(Entity.class.isAssignableFrom(Person.class));
-    assertTrue(Entity.class.isAssignableFrom(Address.class));
+    assertTrue("Entity is not implemented by Person!", Entity.class.isAssignableFrom(Person.class));
+    assertTrue("Entity is not implemented by Address!", Entity.class.isAssignableFrom(Address.class));
 
-    assertFalse(HasKey.class.isAssignableFrom(NoInterfacesObject.class));
-    assertFalse(HasValue.class.isAssignableFrom(NoInterfacesObject.class));
-    assertFalse(KeyValueReference.class.isAssignableFrom(NoInterfacesObject.class));
-    assertFalse(IKeyValueProvider.class.isAssignableFrom(NoInterfacesObject.class));
+    assertFalse("HasKey is not implemented by NoInterfacesObject!", HasKey.class.isAssignableFrom(NoInterfacesObject.class));
+    assertFalse("HasValue is not implemented by NoInterfacesObject!", HasValue.class.isAssignableFrom(NoInterfacesObject.class));
+    assertFalse("KeyValueReference is not implemented by NoInterfacesObject!", KeyValueReference.class.isAssignableFrom(NoInterfacesObject.class));
+    assertFalse("IKeyValueProvider is not implemented by NoInterfacesObject!", IKeyValueProvider.class.isAssignableFrom(NoInterfacesObject.class));
 
-    assertTrue(HasName.class.isAssignableFrom(NamedRecord.class));
-    assertTrue(MutableOwner.class.isAssignableFrom(NamedRecord.class));
-    assertTrue(MutableOwner2.class.isAssignableFrom(NamedRecord.class));
-    assertFalse(MutableOwner3.class.isAssignableFrom(NamedRecord.class));
+    assertTrue("HasName is not implemented by NamedRecord!", HasName.class.isAssignableFrom(NamedRecord.class));
+    assertTrue("MutableOwner is not implemented by NamedRecord!", MutableOwner.class.isAssignableFrom(NamedRecord.class));
+    assertTrue("MutableOwner2 is not implemented by NamedRecord!", MutableOwner2.class.isAssignableFrom(NamedRecord.class));
+    assertFalse("MutableOwner3 is not implemented by NamedRecord!", MutableOwner3.class.isAssignableFrom(NamedRecord.class));
 
-    assertTrue(GenericInterface.class.isAssignableFrom(GenericString.class));
-    assertTrue(GenericInterface.class.isAssignableFrom(GenericShape.class));
-    assertTrue(GenericInterface.class.isAssignableFrom(GenericDate.class));
+    assertTrue("GenericInterface is not implemented by GenericString!", GenericInterface.class.isAssignableFrom(GenericString.class));
+    assertTrue("GenericInterface is not implemented by GenericShape!", GenericInterface.class.isAssignableFrom(GenericShape.class));
+    assertTrue("GenericInterface is not implemented by GenericDate!", GenericInterface.class.isAssignableFrom(GenericDate.class));
   }
 }

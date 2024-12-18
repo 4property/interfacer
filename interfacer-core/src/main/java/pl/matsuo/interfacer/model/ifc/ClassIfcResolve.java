@@ -38,9 +38,7 @@ public class ClassIfcResolve extends AbstractIfcResolve {
     if (clazz.getTypeParameters().length == 0) {
       return getName();
     } else {
-      return getName()
-          + "<"
-          + join(", ", map(asList(clazz.getTypeParameters()), tp -> typeParams.get(tp.getName())))
+      return getName() + "<" + join(", ", map(asList(clazz.getTypeParameters()), tp -> typeParams.get(tp.getName())))
           + ">";
     }
   }
@@ -62,16 +60,15 @@ public class ClassIfcResolve extends AbstractIfcResolve {
 
   @Override
   protected Map<String, TypeVariableReference> typeVariables() {
-    return toMap(
-        asList(clazz.getTypeParameters()),
-        TypeVariable::getName,
-        tp -> new TypeVariableReference(tp, null));
+    return toMap(asList(clazz.getTypeParameters()), TypeVariable::getName, tp -> new TypeVariableReference(tp, null));
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ClassIfcResolve that)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof ClassIfcResolve that))
+      return false;
     return Objects.equals(getName(), that.getName());
   }
 

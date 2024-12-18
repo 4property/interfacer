@@ -3,22 +3,22 @@ package pl.matsuo.interfacer.core.log;
 import java.util.function.Supplier;
 
 public class Log {
-    static Adapter adapter ;
+    static Adapter adapter;
 
     static {
-        adapter =  Adapter.of("pl.matsuo.interfacer");
+        adapter = Adapter.of("pl.matsuo.interfacer");
     }
 
     /**
-     * Set the adapter to be used for logging. By default, it is set to the adapter for the
-     * pl.matsuo.interfacer package that uses slf4j.
+     * Set the adapter to be used for logging. By default, it is set to the adapter
+     * for the pl.matsuo.interfacer package that uses slf4j.
      * 
      * @param adapter
      */
     public static void setAdapter(Adapter adapter) {
         Log.adapter = adapter;
     }
-    
+
     public static void info(Supplier<String> message) {
         adapter.info(message);
     }
@@ -47,15 +47,15 @@ public class Log {
         return adapter.isDebugEnabled();
     }
 
-    public static boolean isErrorEnabled(){
+    public static boolean isErrorEnabled() {
         return adapter.isErrorEnabled();
     }
 
-    public static boolean isWarnEnabled(){
+    public static boolean isWarnEnabled() {
         return adapter.isWarnEnabled();
     }
 
-    public static boolean isInfoEnabled(){
+    public static boolean isInfoEnabled() {
         return adapter.isInfoEnabled();
     }
 }

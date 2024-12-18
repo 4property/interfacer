@@ -29,42 +29,34 @@ public abstract class AbstractIfcResolve implements IfcResolve {
 
     AtomicBoolean incompatible = new AtomicBoolean();
     Map<String, String> result = new HashMap<>();
-    typeVariableMappings.forEach(
-        mapping -> {
-          mapping.forEach(
-              (key, value) -> {
-                if (result.containsKey(key) && !result.get(key).equals(value)) {
-                  incompatible.set(true);
-                }
-              });
-          result.putAll(mapping);
-        });
+    typeVariableMappings.forEach(mapping -> {
+      mapping.forEach((key, value) -> {
+        if (result.containsKey(key) && !result.get(key).equals(value)) {
+          incompatible.set(true);
+        }
+      });
+      result.putAll(mapping);
+    });
 
     return incompatible.get() ? null : result;
   }
 
-  protected List<Map<String, String>> getTypeVariableMappings(
-      ClassOrInterfaceDeclaration declaration, List<MethodReference> methods) {
+  protected List<Map<String, String>> getTypeVariableMappings(ClassOrInterfaceDeclaration declaration,
+      List<MethodReference> methods) {
     Map<String, TypeVariableReference> typeVariables = typeVariables();
-    return filterMap(
-        methods, method -> findMatchingMethodTypeVariables(declaration, typeVariables, method));
+    return filterMap(methods, method -> findMatchingMethodTypeVariables(declaration, typeVariables, method));
   }
 
-  private Map<String, String> findMatchingMethodTypeVariables(
-      ClassOrInterfaceDeclaration declaration,
-      Map<String, TypeVariableReference> typeVariables,
-      MethodReference method) {
-    return getFirst(
-        filterMap(
-            declaration.getMethodsByName(method.getName()),
-            methodDeclaration -> method.matches(methodDeclaration, typeVariables)),
-        Objects::nonNull);
+  private Map<String, String> findMatchingMethodTypeVariables(ClassOrInterfaceDeclaration declaration,
+      Map<String, TypeVariableReference> typeVariables, MethodReference method) {
+    return getFirst(filterMap(declaration.getMethodsByName(method.getName()),
+        methodDeclaration -> method.matches(methodDeclaration, typeVariables)), Objects::nonNull);
   }
 
   protected abstract Map<String, TypeVariableReference> typeVariables();
 
-    @Override
-    public final int hashCode() {
-        return Objects.hash(getName());
-    }
+  @Override
+  public final int hashCode() {
+    return Objects.hash(getName());
+  }
 }

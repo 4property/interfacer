@@ -39,7 +39,6 @@ public interface Adapter {
     return new Adapter() {
       final Logger log = LoggerFactory.getLogger(name);
 
-
       @Override
       public void debug(Supplier<String> message) {
         log.debug(message.get());
@@ -94,7 +93,6 @@ public interface Adapter {
       public void warn(Supplier<String> messageSupplier, Supplier<Throwable> throwableSupplier) {
         log.warn(messageSupplier.get(), throwableSupplier.get());
       }
-
 
     };
   }

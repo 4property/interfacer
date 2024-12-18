@@ -16,14 +16,10 @@ import org.apache.maven.project.MavenProject;
 import pl.matsuo.interfacer.core.InterfacesAdder;
 
 /**
- * This plugin is a sample for building your own plugins. It takes a directory of source code and
- * adds a trace line to each method.
+ * This plugin is a sample for building your own plugins. It takes a directory
+ * of source code and adds a trace line to each method.
  */
-@Mojo(
-        name = "add-interfaces",
-        defaultPhase = LifecyclePhase.PROCESS_SOURCES,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        threadSafe = true)
+@Mojo(name = "add-interfaces", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class InterfacerPluginMojo extends AbstractMojo {
 
     /**
@@ -33,7 +29,8 @@ public class InterfacerPluginMojo extends AbstractMojo {
     String interfacePackage;
 
     /**
-     * Language level to use when parsing source files. The default is is POPULAR (Java 11)
+     * Language level to use when parsing source files. The default is is POPULAR
+     * (Java 11)
      */
     @Parameter(defaultValue = "POPULAR")
     String languageLevel;
@@ -65,13 +62,8 @@ public class InterfacerPluginMojo extends AbstractMojo {
         JavaParserMavenUtils.makeInterfacerLogToMavenOutput(getLog());
 
         try {
-            new InterfacesAdder()
-                    .addInterfacesAllFiles(
-                            scanDirectory,
-                            interfacesDirectory,
-                            interfacePackage,
-                            languageLevel,
-                            getCombinedClasspathElements());
+            new InterfacesAdder().addInterfacesAllFiles(scanDirectory, interfacesDirectory, interfacePackage,
+                    languageLevel, getCombinedClasspathElements());
         } catch (Exception e) {
             throw new MojoExecutionException("Error occurred: " + e.getMessage(), e);
         }
