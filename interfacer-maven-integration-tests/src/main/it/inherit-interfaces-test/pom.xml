@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pl.matsuo.interfacer</groupId>
     <artifactId>inherit-interfaces-test</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.13-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <build>
@@ -16,7 +16,6 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                     <generatedSourcesDirectory>${project.build.directory}/generated-sources/avro</generatedSourcesDirectory>
                 </configuration>
             </plugin>
@@ -42,7 +41,7 @@
             <plugin>
                 <groupId>pl.matsuo.interfacer</groupId>
                 <artifactId>interfacer-maven-plugin</artifactId>
-                <version>0.2.4-SNAPSHOT</version>
+                <version>0.2.13-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>
@@ -50,7 +49,7 @@
                             <goal>add-interfaces</goal>
                         </goals>
                         <configuration>
-                            <interfacePackage>com.example.avro</interfacePackage>
+                            <interfacePackage>com.example</interfacePackage>
                             <languageLevel>21</languageLevel>
                         </configuration>    
                     </execution>
