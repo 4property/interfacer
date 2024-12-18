@@ -44,13 +44,8 @@ public class ClasspathInterfacesScanner {
 
   /** Create {@link IfcResolve} for <code>type</code> if it is representing interface. */
   public IfcResolve processClassFromClasspath(Class<?> type, TypeSolver typeSolver) {
-    Log.debug(() -> "[ClasspathInterfacesScanner] Fetched classpath type: " + type.getCanonicalName());
     if (type.isInterface()) {
-      if (Log.isDebugEnabled()) {
-        Log.info(() -> "[ClasspathInterfacesScanner]  %s is interface type".formatted(type.getCanonicalName()));
-      } else {
-        Log.info(() -> "[ClasspathInterfacesScanner]  Added interface: %s".formatted(type.getCanonicalName()));
-      }
+      Log.info(() -> "[ClasspathInterfacesScanner]  Detected interface: %s".formatted(type.getCanonicalName()));
       return new ClassIfcResolve(type, typeSolver);
     }
 

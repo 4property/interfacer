@@ -58,7 +58,7 @@ public class SourceInterfacesScanner {
                       // Do the actual logic
                       IfcResolve ifcResolve = getIfcResolve(cu);
                       if (ifcResolve != null) {
-                        Log.debug(() -> "[SourceInterfacesScanner] Found interface: " + ifcResolve.getName());
+                        Log.debug(() -> "[SourceInterfacesScanner] Added interface: " + ifcResolve.getName() + " for modification phase");
                         ifcs.add(ifcResolve);
                       }
                     });
@@ -95,7 +95,6 @@ public class SourceInterfacesScanner {
             .map(type -> (ClassOrInterfaceDeclaration) type)
             .filter(ClassOrInterfaceDeclaration::isInterface)
             .map(type -> {
-              Log.debug(() -> "[SourceInterfacesScanner] Resolved interface: " + type.getNameAsString());
               return new TypeDeclarationIfcResolve(compilationUnit, type);
             })
             .orElse(null);

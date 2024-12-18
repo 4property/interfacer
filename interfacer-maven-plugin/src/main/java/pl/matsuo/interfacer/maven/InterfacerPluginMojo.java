@@ -41,7 +41,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
     /**
      * Location for the source files with added trace lines.
      */
-    // @Parameter(defaultValue = "${project.build.sourceDirectory}")
+    @Parameter(defaultValue = "${project.build.sourceDirectory}")
     File interfacesDirectory;
 
     /**
@@ -80,6 +80,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
     private List<String> getCombinedClasspathElements() throws DependencyResolutionRequiredException {
         Set<String> combinedClassPathElements = new HashSet<>(project.getCompileClasspathElements());
         combinedClassPathElements.addAll(project.getRuntimeClasspathElements());
+        combinedClassPathElements.addAll(project.getCompileSourceRoots());
         getLog().info("Processed class path elements");
         return combinedClassPathElements.stream().peek(s -> getLog().debug(s + '\n')).toList();
     }

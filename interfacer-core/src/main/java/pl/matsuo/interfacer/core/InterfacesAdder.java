@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.HashSet;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,9 +40,8 @@ public class InterfacesAdder {
 
     /** Save all changes to disk. */
     public void save() {
-      if (isEmpty()) {
         source.saveAll();
-      }
+        modifications.clear();
     }
 
     /** Check if there were any modifications. */
@@ -137,7 +137,7 @@ public class InterfacesAdder {
             compileClasspathElements,
             allModifications);
 
-        if (!modifications.isEmpty()) {
+        if (modifications.isEmpty()) {
           Log.info(() -> "[InterfacesAdder] End of processing");
           break;
         }
@@ -162,8 +162,10 @@ public class InterfacesAdder {
 
     allModifications.addAll(modifications.modifications());
 
-    // save changes on disk
-    modifications.save();
+    if(!modifications.isEmpty()){
+      // save changes on disk
+      modifications.save();
+    }
     return modifications;
   }
 
@@ -181,6 +183,7 @@ public class InterfacesAdder {
     final SourceRoot source = new SourceRoot(scanDirectory.toPath(), parsingContext.parserConfiguration);
 
     List<IfcResolve> ifcs = scanInterfaces(interfacesDirectories, interfacePackages, parsingContext);
+    Log.debug(() -> "[InterfacesAdder] Completed intefaces Scanning, found " + ifcs.size() + " interfaces!");
 
     List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> modifications = emptyList();
     try {
@@ -188,6 +191,13 @@ public class InterfacesAdder {
               parsingContext.javaParser);
     } catch (IOException e) {
       Log.error(() -> "[InterfacesAdder] Error reading from source directory", () -> e);
+    } catch (com.github.javaparser.resolution.UnsolvedSymbolException es){
+      if(Log.isDebugEnabled()){
+         Log.error(() -> "[InterfacesAdder] Failed to apply modifications!",() -> es ); 
+      }else{
+         Log.warn(() -> "[InterfacesAdder] Failed to apply modifications to classes in " + scanDirectory.getAbsolutePath() + ". Cause: " + es.getMessage());
+      }
+
     }
     return new Modifications(source, modifications);
   }
@@ -299,7 +309,7 @@ public class InterfacesAdder {
       List<ParseResult<CompilationUnit>> parseResults,
       List<IfcResolve> ifcs,
       JavaParser javaParser) {
-
+    Log.info(()-> "[InterfacesAdder] Starting modification with " + parseResults.size() + " discovered java code file/s.");
     return flatMap(
         parseResults,
         parseResult -> {
@@ -309,6 +319,11 @@ public class InterfacesAdder {
                 .getResult()
                 .map(
                     cu -> {
+                      if(Log.isDebugEnabled() && cu.getPrimaryTypeName().isPresent()){
+                        Log.debug(() -> "[InterfacesAdder] Processing source java with compilation unit: " + cu.getPrimaryTypeName().get());
+                      } else if (Log.isDebugEnabled()){
+                        Log.debug(() -> "[InterfacesAdder] Processing source java with available meta type: " + cu.getMetaModel().getTypeName());
+                      }  
                       // Do the actual logic
                       return addInterfaces(cu, ifcs, javaParser);
                     })
@@ -329,7 +344,7 @@ public class InterfacesAdder {
             primaryType -> primaryType.isClassOrInterfaceDeclaration()
                 ? (ClassOrInterfaceDeclaration) primaryType
                 : null)
-        .filter(declaration -> !declaration.isInterface())
+        .filter(declaration -> declaration != null && !declaration.isInterface())
         .map(
             declaration -> filterMap(
                 ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
@@ -347,9 +362,19 @@ public class InterfacesAdder {
       ClassOrInterfaceDeclaration declaration, IfcResolve ifc, JavaParser javaParser) {
 
     Map<String, String> resolvedTypeVariables = ifc.matches(declaration);
-
+    if(Log.isDebugEnabled()){
+      if(resolvedTypeVariables != null){
+        for (Entry<String,String> pair : resolvedTypeVariables.entrySet()) {
+          Log.debug(()-> "[InterfacesAdder] Signature of type member: " + pair.getKey() +" matches to type: " + pair.getValue());  
+        }
+      }
+    }
+    
     // if any of the declaration's ancestors is already assignable to ifc
     boolean canBeAssignedTo = canBeAssignedTo(declaration, ifc);
+    if(Log.isDebugEnabled() && canBeAssignedTo){
+      Log.debug(()-> "[InterfacesAdder] Inteface: " + ifc.getName() + " is already ancestor to type: " + declaration.getNameAsString() + ", skipping!" );
+    }
     if (resolvedTypeVariables != null && !canBeAssignedTo) {
       return addInterfaceToClassDeclaration(declaration, ifc, javaParser, resolvedTypeVariables);
     }
