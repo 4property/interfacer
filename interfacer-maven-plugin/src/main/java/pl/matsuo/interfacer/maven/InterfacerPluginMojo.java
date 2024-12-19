@@ -54,6 +54,14 @@ public class InterfacerPluginMojo extends AbstractMojo {
     MavenProject project;
 
     /**
+     * The maximum number of recursive passes to perform. Useful for adding interfaces to classes that depend on each other
+     * and implements interfaces that depend on each other. This may require multiple passes to add all interfaces. By default
+     * it is set to 1 which means that the plugin will run only one pass to update all target classes.
+     */ 
+    @Parameter(defaultValue = "1")
+    int recursionLimit;
+
+    /**
      * Configure execution environment and invoke interface adder.
      */
     @Override
@@ -63,7 +71,7 @@ public class InterfacerPluginMojo extends AbstractMojo {
 
         try {
             new InterfacesAdder().addInterfacesAllFiles(scanDirectory, interfacesDirectory, interfacePackage,
-                    languageLevel, getCombinedClasspathElements());
+                    languageLevel, getCombinedClasspathElements(), recursionLimit);
         } catch (Exception e) {
             throw new MojoExecutionException("Error occurred: " + e.getMessage(), e);
         }

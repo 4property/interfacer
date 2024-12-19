@@ -99,15 +99,31 @@ public class InterfacesAdder {
    * <code>SampleResult</code>. Now in second pass we can add
    * <code>SampleInterface2</code> to <code>Sample</code>.
    *
-   * @param languageLevel The language level to use when parsing source files.
-   *                      This is a string value that can be the java version. It
-   *                      can also be string constants like "CURRENT", "POPULAR"
-   *                      or "LATEST". CURRENT is Java 18 and POPULAR is Java 11.
-   *                      LATEST is the latest version of Java that is supported
-   *                      by the JavaParser library.
+   * @param languageLevel            The language level to use when parsing source
+   *                                 files. This is a string value that can be the
+   *                                 java version. It can also be string constants
+   *                                 like "CURRENT", "POPULAR" or "LATEST".
+   *                                 CURRENT is Java 18 and POPULAR is Java 11.
+   *                                 LATEST is the latest version of Java that is
+   *                                 supported by the JavaParser library.
+   * @param compileClasspathElements The classpath elements to use when scanning
+   *                                 for interfaces. This is added by Maven or
+   *                                 Gradle plugins.
+   * @param scanDirectory            The directory to scan for classes to add
+   *                                 interfaces to.
+   * @param interfacesDirectory      The directory to scan for interfaces to add
+   *                                 to classes.
+   * @param interfacePackages        The packages to scan for interfaces to add to
+   *                                 classes.
+   * @param passLimit           The maximum number of  passes to
+   *                                 perform. Useful for adding interfaces to
+   *                                 classes that depend on each other and
+   *                                 implements interfaces that depend on each
+   *                                 other. This may require multiple passes to
+   *                                 add all interfaces.
    */
   public void addInterfacesAllFiles(@NonNull File scanDirectory, File interfacesDirectory, String interfacePackages,
-      String languageLevel, List<String> compileClasspathElements) {
+      String languageLevel, List<String> compileClasspathElements, int passLimit) {
 
     if (interfacesDirectory == null && (interfacePackages == null || compileClasspathElements == null)) {
       throw new RuntimeException("""
@@ -119,19 +135,19 @@ public class InterfacesAdder {
           compileClasspathElements));
     }
 
-    Log.info(() -> "[InterfacesAdder] Start processing");
+    Log.info(() -> "[InterfacesAdder] Start processing with passes: " + passLimit);
 
     try {
       List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> allModifications = new ArrayList<>();
-      while (true) {
+      for (int i = 0; i < passLimit; i++) {
         Modifications modifications = addInterfacesAllFiles(scanDirectory, interfacesDirectory, interfacePackages,
             languageLevel, compileClasspathElements, allModifications);
-
+        String passNumber = Integer.toString(i);
         if (modifications.isEmpty()) {
-          Log.info(() -> "[InterfacesAdder] End of processing");
-          break;
+          Log.info(() -> "[InterfacesAdder] End of pass: " + passNumber);
         }
       }
+      Log.info(() -> "[InterfacesAdder] End of processing");
     } catch (IOException e) {
       throw new RuntimeException("Error reading from source directory", e);
     }
@@ -311,22 +327,21 @@ public class InterfacesAdder {
   /** Add interfaces to class parsed into <code>compilationUnit</code>. */
   private List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> addInterfaces(CompilationUnit compilationUnit,
       List<IfcResolve> ifcs, JavaParser javaParser) {
-    return compilationUnit.getPrimaryType()
-        .map(primaryType -> {
-          if (primaryType.isClassOrInterfaceDeclaration()) {  
-            Log.debug(() -> "[InterfacesAdder] Selected Primary type: " + primaryType.getNameAsString() + " as ClassOrInterfaceDeclaration");
-            return (ClassOrInterfaceDeclaration) primaryType;
-          }
-          return null;
-        })
-        .filter(declaration -> {
-          if (declaration != null && !declaration.isInterface()) {
-            Log.debug(() -> "[InterfacesAdder] Identified Primary type: " + declaration.getNameAsString() + " as a class declaration");
-            return true;
-          }
-          return false;
-        })
-        .map(declaration -> filterMap(ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
+    return compilationUnit.getPrimaryType().map(primaryType -> {
+      if (primaryType.isClassOrInterfaceDeclaration()) {
+        Log.debug(() -> "[InterfacesAdder] Selected Primary type: " + primaryType.getNameAsString()
+            + " as ClassOrInterfaceDeclaration");
+        return (ClassOrInterfaceDeclaration) primaryType;
+      }
+      return null;
+    }).filter(declaration -> {
+      if (declaration != null && !declaration.isInterface()) {
+        Log.debug(() -> "[InterfacesAdder] Identified Primary type: " + declaration.getNameAsString()
+            + " as a class declaration");
+        return true;
+      }
+      return false;
+    }).map(declaration -> filterMap(ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
         .orElse(emptyList());
   }
 

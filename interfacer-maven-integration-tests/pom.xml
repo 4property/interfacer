@@ -5,10 +5,10 @@
   <parent>
     <groupId>pl.matsuo.interfacer</groupId>
     <artifactId>interfacer-parent</artifactId>
-    <version>0.2.16-SNAPSHOT</version>
+    <version>0.2.17-SNAPSHOT</version>
   </parent>
   <artifactId>interfacer-maven-integration-tests</artifactId>
-  <version>0.2.16-SNAPSHOT</version>
+  <version>0.2.17-SNAPSHOT</version>
 
   <name>Interfacer Maven Plugin Integration tests</name>
   <description>Performs integration tests that independantly runs the plugin to catch non unit testable bugs</description>

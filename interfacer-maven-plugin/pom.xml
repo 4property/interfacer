@@ -5,10 +5,10 @@
   <parent>
     <groupId>pl.matsuo.interfacer</groupId>
     <artifactId>interfacer-parent</artifactId>
-    <version>0.2.16-SNAPSHOT</version>
+    <version>0.2.17-SNAPSHOT</version>
   </parent>
   <artifactId>interfacer-maven-plugin</artifactId>
-  <version>0.2.16-SNAPSHOT</version>
+  <version>0.2.17-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Interfacer Maven Plugin</name>
@@ -47,13 +47,13 @@
     <dependency>
       <groupId>pl.matsuo.interfacer</groupId>
       <artifactId>interfacer-core</artifactId>
-      <version>0.2.16-SNAPSHOT</version>
+      <version>0.2.17-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>pl.matsuo.interfacer</groupId>
       <artifactId>sample-interfaces</artifactId>
-      <version>0.2.16-SNAPSHOT</version>
+      <version>0.2.17-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
