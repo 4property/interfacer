@@ -8,6 +8,5 @@ public interface MethodReference {
 
   String getName();
 
-  Map<String, String> matches(
-      MethodDeclaration methodDeclaration, Map<String, TypeVariableReference> typeVariables);
+  Map<String, String> matches(MethodDeclaration methodDeclaration, Map<String, TypeVariableReference> typeVariables);
 }

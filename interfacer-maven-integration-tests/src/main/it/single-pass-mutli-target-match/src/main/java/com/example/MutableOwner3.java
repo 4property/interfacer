@@ -1,4 +1,4 @@
-package pl.matsuo.interfacer.showcase;
+package com.example;
 
 public interface MutableOwner3 {
 

@@ -7,10 +7,8 @@ import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.types.ResolvedType;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
-@Slf4j
 @RequiredArgsConstructor
 public class MethodUsageReference implements MethodReference {
 
@@ -20,8 +18,8 @@ public class MethodUsageReference implements MethodReference {
     return methodUsage.getName();
   }
 
-  public Map<String, String> matches(
-      MethodDeclaration methodDeclaration, Map<String, TypeVariableReference> typeVariables) {
+  public Map<String, String> matches(MethodDeclaration methodDeclaration,
+      Map<String, TypeVariableReference> typeVariables) {
     if (!returnTypeMatches(methodDeclaration)) {
       return null;
     }
@@ -57,10 +55,7 @@ public class MethodUsageReference implements MethodReference {
 
   private boolean returnTypeMatches(MethodDeclaration methodDeclaration) {
     if (methodUsage.returnType().isPrimitive() || methodUsage.returnType().isVoid()) {
-      if (!methodUsage
-          .returnType()
-          .toString()
-          .equals(methodDeclaration.getType().resolve().toString())) {
+      if (!methodUsage.returnType().toString().equals(methodDeclaration.getType().resolve().toString())) {
         return false;
       }
     } else {

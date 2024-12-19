@@ -1,15 +1,5 @@
 @namespace("pl.matsuo.interfacer.avro")
-protocol KeyValue {
-
-    record BasicKeyValue {
-      string key;
-      union {null, string} value = null;
-    }
-
-    record KeyValueReference {
-      string key;
-      union {null, BasicKeyValue} value = null;
-    }
+protocol Samples {
 
     record NoInterfacesObject {
       string customValue;
@@ -56,4 +46,5 @@ protocol KeyValue {
       string email;
       Address address;
     }
+
 }

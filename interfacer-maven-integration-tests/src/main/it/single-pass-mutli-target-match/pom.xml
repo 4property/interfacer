@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pl.matsuo.interfacer</groupId>
+  <artifactId>single-pass-multi-target-match</artifactId>
+  <version>0.3.0</version>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>1.12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>pl.matsuo.interfacer</groupId>
+      <artifactId>sample-interfaces</artifactId>
+      <version>0.2.17-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-maven-plugin</artifactId>
+        <version>1.12.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>schema</goal>
+              <goal>protocol</goal>
+              <goal>idl-protocol</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <plugin>
+        <groupId>pl.matsuo.interfacer</groupId>
+        <artifactId>interfacer-maven-plugin</artifactId>
+        <version>0.3.0</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>add-interfaces</goal>
+            </goals>
+            <configuration>
+              <interfacePackage>pl.matsuo.interfacer.showcase,com.example</interfacePackage>
+              <languageLevel>21</languageLevel>
+              <debug>true</debug>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+    </plugins>
+  </build>
+</project>

@@ -13,16 +13,16 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import pl.matsuo.interfacer.model.ref.MethodReference;
 import pl.matsuo.interfacer.model.ref.ReflectionMethodReference;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
 @ToString
 @RequiredArgsConstructor
-@Slf4j
 public class ClassIfcResolve extends AbstractIfcResolve {
 
   final Class<?> clazz;
@@ -38,9 +38,7 @@ public class ClassIfcResolve extends AbstractIfcResolve {
     if (clazz.getTypeParameters().length == 0) {
       return getName();
     } else {
-      return getName()
-          + "<"
-          + join(", ", map(asList(clazz.getTypeParameters()), tp -> typeParams.get(tp.getName())))
+      return getName() + "<" + join(", ", map(asList(clazz.getTypeParameters()), tp -> typeParams.get(tp.getName())))
           + ">";
     }
   }
@@ -62,9 +60,16 @@ public class ClassIfcResolve extends AbstractIfcResolve {
 
   @Override
   protected Map<String, TypeVariableReference> typeVariables() {
-    return toMap(
-        asList(clazz.getTypeParameters()),
-        TypeVariable::getName,
-        tp -> new TypeVariableReference(tp, null));
+    return toMap(asList(clazz.getTypeParameters()), TypeVariable::getName, tp -> new TypeVariableReference(tp, null));
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof ClassIfcResolve that))
+      return false;
+    return Objects.equals(getName(), that.getName());
+  }
+
 }

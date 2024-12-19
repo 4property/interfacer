@@ -18,10 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import pl.matsuo.interfacer.core.log.Log;
 import pl.matsuo.interfacer.model.tv.TypeVariableReference;
 
-@Slf4j
 @RequiredArgsConstructor
 public class ReflectionMethodReference implements MethodReference {
 
@@ -32,8 +31,8 @@ public class ReflectionMethodReference implements MethodReference {
     return method.getName();
   }
 
-  public Map<String, String> matches(
-      MethodDeclaration methodDeclaration, Map<String, TypeVariableReference> typeVariables) {
+  public Map<String, String> matches(MethodDeclaration methodDeclaration,
+      Map<String, TypeVariableReference> typeVariables) {
     if (!returnTypeMatches(methodDeclaration)) {
       return null;
     }
@@ -42,7 +41,8 @@ public class ReflectionMethodReference implements MethodReference {
       return null;
     }
 
-    // com.github.javaparser.ast.type.Type type = methodDeclaration.getParameter(0).getType();
+    // com.github.javaparser.ast.type.Type type =
+    // methodDeclaration.getParameter(0).getType();
     // TypeParameter
     // IntersectionType
     // WildcardType
@@ -54,12 +54,9 @@ public class ReflectionMethodReference implements MethodReference {
 
     Map<String, String> result = new HashMap<>();
 
-    Map<String, String> resultConstraints =
-        typeConstraints(methodDeclaration.getType(), method.getGenericReturnType());
-    Map<String, String> parameterConstraints =
-        typeConstraints(
-            map(methodDeclaration.getParameters(), Parameter::getType),
-            method.getGenericParameterTypes());
+    Map<String, String> resultConstraints = typeConstraints(methodDeclaration.getType(), method.getGenericReturnType());
+    Map<String, String> parameterConstraints = typeConstraints(
+        map(methodDeclaration.getParameters(), Parameter::getType), method.getGenericParameterTypes());
 
     // todo: this is not a correct way of merging type constraints
     result.putAll(resultConstraints);
@@ -68,8 +65,7 @@ public class ReflectionMethodReference implements MethodReference {
     return result;
   }
 
-  public static Map<String, String> typeConstraints(
-      List<com.github.javaparser.ast.type.Type> params, Type[] generics) {
+  public static Map<String, String> typeConstraints(List<com.github.javaparser.ast.type.Type> params, Type[] generics) {
     Map<String, String> result = new HashMap<>();
 
     for (int i = 0; i < params.size(); i++) {
@@ -80,28 +76,23 @@ public class ReflectionMethodReference implements MethodReference {
     return result;
   }
 
-  public static Map<String, String> typeConstraints(
-      com.github.javaparser.ast.type.Type param, Type generic) {
+  public static Map<String, String> typeConstraints(com.github.javaparser.ast.type.Type param, Type generic) {
     Map<String, String> result = new HashMap<>();
 
     if (generic instanceof ParameterizedType) {
-      log.info("ParameterizedType " + generic);
+      Log.debug(() -> "ParameterizedType " + generic);
       if (param instanceof ClassOrInterfaceType) {
-        List<com.github.javaparser.ast.type.Type> typeArguments =
-            ((ClassOrInterfaceType) param)
-                .getTypeArguments()
-                .map(types -> new ArrayList<>(types))
-                .orElse(new ArrayList<>());
-        result.putAll(
-            typeConstraints(typeArguments, ((ParameterizedType) generic).getActualTypeArguments()));
+        List<com.github.javaparser.ast.type.Type> typeArguments = ((ClassOrInterfaceType) param).getTypeArguments()
+            .map(types -> new ArrayList<>(types)).orElse(new ArrayList<>());
+        result.putAll(typeConstraints(typeArguments, ((ParameterizedType) generic).getActualTypeArguments()));
       } else {
         throw new RuntimeException("Not implemented yet");
       }
     } else if (generic instanceof TypeVariable) {
-      log.info("TypeVariable " + generic);
+      Log.debug(() -> "TypeVariable " + generic);
       result.put(((TypeVariable<?>) generic).getName(), param.resolve().describe());
     } else {
-      log.info("Not a generic: " + generic + " for concrete: " + param);
+      Log.debug(() -> "Not a generic: %s for concrete: %s".formatted(generic, param));
     }
 
     return result;
@@ -125,8 +116,8 @@ public class ReflectionMethodReference implements MethodReference {
         return false;
       }
     } else {
-      ResolvedReferenceTypeDeclaration resolvedReferenceTypeDeclaration =
-          typeDeclarationFor(method.getReturnType(), typeSolver);
+      ResolvedReferenceTypeDeclaration resolvedReferenceTypeDeclaration = typeDeclarationFor(method.getReturnType(),
+          typeSolver);
 
       if (!resolvedReferenceTypeDeclaration.isAssignableBy(methodDeclaration.getType().resolve())) {
         return false;
