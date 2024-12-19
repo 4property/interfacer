@@ -37,20 +37,20 @@ assert noInterfacesObjectContent.contains('implements org.apache.avro.specific.S
 println "NoInterfacesObject class correctly implements SpecificRecord interface. But it does not match any interfacer matched interfaces as expected."
 
 def namedRecordContent = new String(Files.readAllBytes(namedRecordPath))    
-assert namedRecordContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.HasName, pl.matsuo.interfacer.showcase.MutableOwner, com.example.MutableOwner2, com.example.MutableOwner3')
-println "NamedRecord class correctly implements HasName, MutableOwner, MutableOwner2, MutableOwner3 interfaces as expected."
+assert namedRecordContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.MutableOwner, com.example.MutableOwner2, pl.matsuo.interfacer.showcase.HasName')
+println "NamedRecord class correctly implements HasName, MutableOwner & MutableOwner2 interfaces as expected."
 
 def genericStringContent = new String(Files.readAllBytes(genericStringPath))    
-assert genericStringContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<java.lang.String>')
-println "GenericString class correctly implements GenericInterface<String> interface as expected."
+assert genericStringContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<java.lang.CharSequence>')
+println "GenericString class correctly implements GenericInterface<CharSequence> interface as expected."
 
 def genericShapeContent = new String(Files.readAllBytes(genericShapePath))    
-assert genericShapeContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<pl.matsuo.interfacer.showcase.Shape>')
+assert genericShapeContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<pl.matsuo.interfacer.avro.Shape>')
 println "GenericShape class correctly implements GenericInterface<Shape> interface as expected."
 
 def genericDateContent = new String(Files.readAllBytes(genericDatePath))    
-assert genericDateContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<java.util.Date>')
-println "GenericDate class correctly implements GenericInterface<Date> interface as expected."
+assert genericDateContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.GenericInterface<java.time.LocalDate>')
+println "GenericDate class correctly implements GenericInterface<LocalDate> interface as expected."
 
 def addressContent = new String(Files.readAllBytes(addressPath))    
 assert addressContent.contains('implements org.apache.avro.specific.SpecificRecord, pl.matsuo.interfacer.showcase.Entity')
