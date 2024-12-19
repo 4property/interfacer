@@ -29,7 +29,7 @@ public class SourceInterfacesScanner {
 
     // do not scan anything if source directory was not specified
     if (interfacesDirectories == null || interfacesDirectories.isEmpty()) {
-      Log.debug(() -> "[SourceInterfacesScanner] No interface directories to scan");
+      Log.warn(() -> "[SourceInterfacesScanner] No interface directories to scan");
       return ifcs;
     }
 
@@ -46,8 +46,7 @@ public class SourceInterfacesScanner {
       try {
         List<ParseResult<CompilationUnit>> parseResults = source.tryToParse();
         if (parseResults.isEmpty()) {
-          Log.debug(
-              () -> "[SourceInterfacesScanner] No source files found in: " + interfacesDirectory.getAbsolutePath());
+          Log.warn(() -> "[SourceInterfacesScanner] No source files found in: " + interfacesDirectory.getAbsolutePath());
           continue;
         }
 
@@ -58,7 +57,7 @@ public class SourceInterfacesScanner {
               // Do the actual logic
               IfcResolve ifcResolve = getIfcResolve(cu);
               if (ifcResolve != null) {
-                Log.debug(() -> "[SourceInterfacesScanner] Added interface: " + ifcResolve.getName()
+                Log.info(() -> "[SourceInterfacesScanner] Added interface: " + ifcResolve.getName()
                     + " for modification phase");
                 ifcs.add(ifcResolve);
               }

@@ -312,9 +312,20 @@ public class InterfacesAdder {
   private List<Pair<IfcResolve, ClassOrInterfaceDeclaration>> addInterfaces(CompilationUnit compilationUnit,
       List<IfcResolve> ifcs, JavaParser javaParser) {
     return compilationUnit.getPrimaryType()
-        .map(primaryType -> primaryType.isClassOrInterfaceDeclaration() ? (ClassOrInterfaceDeclaration) primaryType
-            : null)
-        .filter(declaration -> declaration != null && !declaration.isInterface())
+        .map(primaryType -> {
+          if (primaryType.isClassOrInterfaceDeclaration()) {  
+            Log.debug(() -> "[InterfacesAdder] Selected Primary type: " + primaryType.getNameAsString() + " as ClassOrInterfaceDeclaration");
+            return (ClassOrInterfaceDeclaration) primaryType;
+          }
+          return null;
+        })
+        .filter(declaration -> {
+          if (declaration != null && !declaration.isInterface()) {
+            Log.debug(() -> "[InterfacesAdder] Identified Primary type: " + declaration.getNameAsString() + " as a class declaration");
+            return true;
+          }
+          return false;
+        })
         .map(declaration -> filterMap(ifcs, ifc -> processDeclarationWithInterface(declaration, ifc, javaParser)))
         .orElse(emptyList());
   }

@@ -16,7 +16,7 @@ assert Files.exists(generatedClassPath)
 def generatedClassContent = new String(Files.readAllBytes(generatedClassPath))
 
 // Check if the generated class implements both Entity and Persona interfaces
-assert generatedClassContent.contains('implements org.apache.avro.specific.SpecificRecord, com.example.avro.ExampleRecord')
+assert generatedClassContent.contains('implements org.apache.avro.specific.SpecificRecord, com.example.Persona, com.example.Entity')
 
 // Optionally, print a success message
 println "ExampleRecord class correctly implements both Entity and Persona interfaces."
